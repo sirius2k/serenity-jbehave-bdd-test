@@ -1,0 +1,4 @@
+JSONPlaceHolder post requirements
+In order to share and manage posts
+As a User
+I want to view, create, update and delete a post
