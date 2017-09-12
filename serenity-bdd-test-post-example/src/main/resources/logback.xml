@@ -21,7 +21,7 @@
         </encoder>
     </appender-->
 
-    <logger name="org.springframework" level="INFO">
+    <logger name="org.springframework" level="ERROR" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
 
@@ -29,7 +29,7 @@
         <appender-ref ref="STDOUT_COLOR" />
     </logger>
 
-    <logger name="kr.co.redbrush.bdd.test" level="INFO">
+    <logger name="kr.co.redbrush.bdd.test" level="INFO" additivity="false">
         <appender-ref ref="STDOUT" />
     </logger>
 
