@@ -70,4 +70,9 @@ mvn -p[Profile] clean verify -Dmetafilter="+scenario Creating a post"
 Park, KyoungWook (Kevin) / sirius00@paran.com
 
 ## License
-TDB
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+
+## Acknowledgments
+
+* TBD

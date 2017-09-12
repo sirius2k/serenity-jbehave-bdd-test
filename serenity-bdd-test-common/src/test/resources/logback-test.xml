@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%-4relative [%thread] %-5level %logger{35} - %msg %n</pattern>
+        </encoder>
+    </appender>
+    <!-- Below are the examples of colored output and file output -->
+    <appender name="STDOUT_COLOR" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%highlight(%-4relative [%thread] %-5level %logger{35} - %msg %n)</pattern>
+        </encoder>
+    </appender>
+    <!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+    <!--appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>junit.log</file>
+        <append>false</append>
+        <encoder>
+            <pattern>%-4r %-5level %logger{35}: %msg%n</pattern>
+        </encoder>
+    </appender-->
+
+    <logger name="org.springframework" level="INFO" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+
+    <logger name="net.serenitybdd.core.Serenity" level="DEBUG" additivity="false">
+        <appender-ref ref="STDOUT_COLOR" />
+    </logger>
+
+    <logger name="kr.co.redbrush.bdd.test" level="DEBUG" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+
+    <root level="DEBUG">
+        <!--appender-ref ref="FILE" /-->
+        <appender-ref ref="STDOUT" />
+    </root>
+</configuration>
