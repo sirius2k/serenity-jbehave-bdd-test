@@ -1,5 +1,6 @@
 package kr.co.redbrush.bdd.test.ws;
 
+import com.jayway.restassured.path.json.JsonPath;
 import com.jayway.restassured.response.Response;
 import com.jayway.restassured.response.ResponseBody;
 import com.jayway.restassured.response.ValidatableResponse;
@@ -23,7 +24,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @Slf4j
 public class RestAssuredResponseTest {
@@ -39,6 +41,9 @@ public class RestAssuredResponseTest {
     @Mock
     public ResponseBody responseBody;
 
+    @Mock
+    public JsonPath jsonPath;
+
     private String bookStoreJson;
     private String bookJson;
 
@@ -49,6 +54,7 @@ public class RestAssuredResponseTest {
 
         when(response.getBody()).thenReturn(responseBody);
         when(response.then()).thenReturn(validatableResponse);
+        when(response.jsonPath()).thenReturn(jsonPath);
         when(responseBody.asString()).thenReturn(bookStoreJson);
     }
 
@@ -65,31 +71,16 @@ public class RestAssuredResponseTest {
     }
 
     @Test
-    public void testGetStringWithRestAssured() {
-        testGetStringWithPathType(PathType.RESTASSURED);
-    }
-
-    @Test
-    public void testGetStringWithJsonPath() {
-        testGetStringWithPathType(PathType.JSONPATH);
-    }
-
-    private void testGetStringWithPathType(PathType pathType) {
+    public void testGetString() {
         String path = "$.store.book[0].author";
         String expectedAuthor = "Nigel Rees";
 
         when(response.path(path)).thenReturn(expectedAuthor);
 
-        RestAssuredResponse restAssuredResponse = createRestAssuredResponse(pathType);
+        RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
         String author = restAssuredResponse.getString(path);
 
         LOGGER.debug("Extracted author : {}", author);
-
-        if (pathType == PathType.JSONPATH) {
-            verify(response, times(0)).path(path);
-        } else {
-            verify(response, times(1)).path(path);
-        }
 
         assertThat("Author was empty.", author, notNullValue());
         assertThat("Author was not matched.", author, is(expectedAuthor));
@@ -116,7 +107,7 @@ public class RestAssuredResponseTest {
     private void testGetDefaultString(String path, String extractedValue, String defaultValue) {
         when(response.path(path)).thenReturn(extractedValue);
 
-        RestAssuredResponse restAssuredResponse = createRestAssuredResponse();
+        RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
         String author = restAssuredResponse.getDefaultString(path, defaultValue);
 
         LOGGER.debug("Extracted value : {}, defaultValue : {}", extractedValue, defaultValue);
@@ -131,159 +122,123 @@ public class RestAssuredResponseTest {
     }
 
     @Test
-    public void testGetIntegerWithRestAssured() {
-        testGetIntegerWithPathType(PathType.RESTASSURED);
-    }
-
-    @Test
-    public void testGetIntegerWithJsonPath() {
-        testGetIntegerWithPathType(PathType.JSONPATH);
-    }
-
-    private void testGetIntegerWithPathType(PathType pathType) {
+    public void testGetInteger() {
         String path = "$.expensive";
         Integer expectedExpensive = 10;
 
         when(response.path(path)).thenReturn(expectedExpensive);
 
-        RestAssuredResponse restAssuredResponse = createRestAssuredResponse(pathType);
+        RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
         Integer expensive = restAssuredResponse.getInteger(path);
 
         LOGGER.debug("Extracted expensive : {}", expectedExpensive);
-
-        if (pathType == PathType.JSONPATH) {
-            verify(response, times(0)).path(path);
-        } else {
-            verify(response, times(1)).path(path);
-        }
 
         assertThat("expensive was empty.", expensive, notNullValue());
         assertThat("expensive was not matched.", expensive, is(expectedExpensive));
     }
 
     @Test
-    public void testGetFloatWithRestAssured() {
-        testGetFloatWithPathType(PathType.RESTASSURED);
-    }
-
-    @Test
-    public void testGetFloatWithJsonPath() {
-        testGetFloatWithPathType(PathType.JSONPATH);
-    }
-
-    private void testGetFloatWithPathType(PathType pathType) {
+    public void testGetFloat() {
         String path = "$.store.book[0].price";
         Float expectedPrice = 8.95f;
 
         when(response.path(path)).thenReturn(expectedPrice);
 
-        RestAssuredResponse restAssuredResponse = createRestAssuredResponse(pathType);
+        RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
         Float price = restAssuredResponse.getFloat(path);
 
         LOGGER.debug("Extracted expensive : {}", expectedPrice);
-
-        if (pathType == PathType.JSONPATH) {
-            verify(response, times(0)).path(path);
-        } else {
-            verify(response, times(1)).path(path);
-        }
 
         assertThat("price was empty.", price, notNullValue());
         assertThat("price was not matched.", price, is(expectedPrice));
     }
 
     @Test
-    public void testGetDoubleWithRestAssured() {
-        testGetDoubleWithPathType(PathType.RESTASSURED);
-    }
-
-    @Test
-    public void testGetDoubleWithJsonPath() {
-        testGetDoubleWithPathType(PathType.JSONPATH);
-    }
-
-    private void testGetDoubleWithPathType(PathType pathType) {
+    public void testGetDouble() {
         String path = "$.store.book[0].price";
         Double expectedPrice = 8.95d;
 
         when(response.path(path)).thenReturn(expectedPrice);
 
-        RestAssuredResponse restAssuredResponse = createRestAssuredResponse(pathType);
+        RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
         Double price = restAssuredResponse.getDouble(path);
 
         LOGGER.debug("Extracted expensive : {}", expectedPrice);
-
-        if (pathType == PathType.JSONPATH) {
-            verify(response, times(0)).path(path);
-        } else {
-            verify(response, times(1)).path(path);
-        }
 
         assertThat("price was empty.", price, notNullValue());
         assertThat("price was not matched.", price, is(expectedPrice));
     }
 
     @Test
-    public void testGetObjectWithRestAssured() {
-        testGetObjectWithPathType(PathType.RESTASSURED);
-    }
-
-    @Test
-    public void testGetObjectWithJsonPath() {
-        testGetObjectWithPathType(PathType.JSONPATH);
-    }
-
-    private void testGetObjectWithPathType(PathType pathType) {
+    public void testGetObject() {
         String path = "$.store.book[*].author";
         List<String> expectedAuthors = Arrays.asList("Nigel Rees", "Evelyn Waugh", "Herman Melville", "J. R. R. Tolkien");
 
         when(response.path(path)).thenReturn(expectedAuthors);
 
-        RestAssuredResponse restAssuredResponse = createRestAssuredResponse(pathType);
+        RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
         List<String> authors = restAssuredResponse.getObject(path);
 
         LOGGER.debug("Extracted authors : {}", authors);
-
-        if (pathType == PathType.JSONPATH) {
-            verify(response, times(0)).path(path);
-        } else {
-            verify(response, times(1)).path(path);
-        }
 
         assertThat("Authors was empty.", authors, notNullValue());
         assertThat("Authors was not matched.", authors, containsInAnyOrder(expectedAuthors.toArray()));
     }
 
     @Test
-    public void testGetObjectSpecificTypeWithRestAssured() {
-        testGetObjectSpecificTypeWithPathType(PathType.RESTASSURED);
-    }
-
-    @Test
-    public void testGetObjectSpecificTypeWithJsonPath() {
-        testGetObjectSpecificTypeWithPathType(PathType.JSONPATH);
-    }
-
-    private void testGetObjectSpecificTypeWithPathType(PathType pathType) {
+    public void testGetObjectWithSpecificType() {
         Book expectedBook = createBook();
 
-        if (pathType == PathType.JSONPATH) {
-            reset(responseBody);
-            when(responseBody.asString()).thenReturn(bookJson);
-        } else {
-            when(response.as(Book.class)).thenReturn(expectedBook);
-        }
+        when(response.as(Book.class)).thenReturn(expectedBook);
 
-        RestAssuredResponse restAssuredResponse = createRestAssuredResponse(pathType);
+        RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
         Book book = restAssuredResponse.getObject(Book.class);
 
         LOGGER.debug("Extracted book : {}", book);
 
-        if (pathType == PathType.JSONPATH) {
-            verify(response, times(0)).as(Book.class);
-        } else {
-            verify(response, times(1)).as(Book.class);
-        }
+        assertThat("Book was empty.", book, notNullValue());
+        assertThat("Book was not matched.", EqualsBuilder.reflectionEquals(expectedBook, book), is(true));
+    }
+
+    @Test
+    public void testGetObjectWithSpecificTypeAndPath() {
+        String path = "$.store.book[0]";
+        Book expectedBook = createBook();
+
+        when(jsonPath.getObject(path, Book.class)).thenReturn(expectedBook);
+
+        RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
+        Book book = restAssuredResponse.getObject(path, Book.class);
+
+        LOGGER.debug("Extracted book : {}", book);
+
+        assertThat("Book was empty.", book, notNullValue());
+        assertThat("Book was not matched.", EqualsBuilder.reflectionEquals(expectedBook, book), is(true));
+    }
+
+    @Test
+    public void testGetObjectByJsonPath() {
+        String path = "$.store.book[*].author";
+        List<String> expectedAuthors = Arrays.asList("Nigel Rees", "Evelyn Waugh", "Herman Melville", "J. R. R. Tolkien");
+
+        RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
+        List<String> authors = restAssuredResponse.getObjectByJsonPath(path);
+
+        LOGGER.debug("Extracted authors : {}", authors);
+
+        assertThat("Authors was empty.", authors, notNullValue());
+        assertThat("Authors was not matched.", authors, containsInAnyOrder(expectedAuthors.toArray()));
+    }
+
+    @Test
+    public void testGetObjectByJsonPathWithSpecificType() {
+        String path = "$.store.book[0]";
+        Book expectedBook = createBook();
+
+        RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
+        Book book = restAssuredResponse.getObjectByJsonPath(path, Book.class);
+
+        LOGGER.debug("Extracted book : {}", book);
 
         assertThat("Book was empty.", book, notNullValue());
         assertThat("Book was not matched.", EqualsBuilder.reflectionEquals(expectedBook, book), is(true));
@@ -304,7 +259,7 @@ public class RestAssuredResponseTest {
         String path = "$.store.book[0].author";
         String expectedAuthor = "Nigel Rees";
 
-        RestAssuredResponse restAssuredResponse = createRestAssuredResponse();
+        RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
 
         when(response.path(path)).thenReturn(expectedAuthor, null);
 
@@ -318,7 +273,7 @@ public class RestAssuredResponseTest {
     @Test
     public void testGetStatusCode() {
         int expectedStatusCode = 200;
-        RestAssuredResponse restAssuredResponse = createRestAssuredResponse();
+        RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
 
         when(response.getStatusCode()).thenReturn(expectedStatusCode);
 
@@ -329,7 +284,7 @@ public class RestAssuredResponseTest {
 
     @Test
     public void testGetContentBody() {
-        RestAssuredResponse restAssuredResponse = createRestAssuredResponse();
+        RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
 
         String contentBody = restAssuredResponse.getContentBody();
 
@@ -338,7 +293,7 @@ public class RestAssuredResponseTest {
 
     @Test
     public void testBodyMatches() {
-        RestAssuredResponse restAssuredResponse = createRestAssuredResponse();
+        RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
         String var1 = "var1";
         Matcher var2 = null;
         Object var3 = null;
@@ -347,23 +302,5 @@ public class RestAssuredResponseTest {
 
         verify(response).then();
         verify(validatableResponse).body(var1, var2, var3);
-    }
-
-    private RestAssuredResponse createRestAssuredResponse() {
-        return createRestAssuredResponse(PathType.RESTASSURED);
-    }
-
-    private RestAssuredResponse createRestAssuredResponse(PathType pathType) {
-        RestAssuredResponse restAssuredResponse = null;
-
-        switch (pathType) {
-            case RESTASSURED:
-                restAssuredResponse = new RestAssuredResponse(response);
-                break;
-            case JSONPATH:
-                restAssuredResponse = new RestAssuredResponse(response, pathType);
-                break;
-        }
-        return restAssuredResponse;
     }
 }

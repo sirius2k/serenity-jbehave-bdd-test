@@ -68,11 +68,7 @@ public class RestAssuredDriver {
 
         response.then().log().all();
 
-        if (pathType!=null) {
-            return new RestAssuredResponse(response, pathType);
-        } else {
-            return new RestAssuredResponse(response);
-        }
+        return new RestAssuredResponse(response);
     }
 
     private RequestSpecification createRequestSpecification(WebServiceRequest request) {
