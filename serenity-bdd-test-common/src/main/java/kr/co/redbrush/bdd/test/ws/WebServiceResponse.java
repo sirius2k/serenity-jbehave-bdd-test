@@ -14,7 +14,10 @@ public interface WebServiceResponse {
     boolean isEmpty(String path);
     int getStatusCode();
     String getContentBody();
-    <T> T getObject(Class<T> clazz);
     <T> T getObject(String path);
+    <T> T getObject(Class<T> clazz);
+    <T> T getObject(String path, Class<T> clazz);
+    <T> T getObjectByJsonPath(String path);
+    <T> T getObjectByJsonPath(String path, Class<T> clazz);
     void bodyMatches(String var1, Matcher<?> var2, Object... var3);
 }

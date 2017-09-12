@@ -1,28 +1,23 @@
 package kr.co.redbrush.bdd.test.ws;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hamcrest.Matcher;
 
-import java.math.BigDecimal;
-
 /**
  * Created by kwpark on 18/04/2017.
  */
 @Slf4j
 public class RestAssuredResponse implements WebServiceResponse {
+    private static final ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     private Response response;
-    private PathType pathType = PathType.RESTASSURED;
 
     public RestAssuredResponse(Response response) {
         this.response = response;
-    }
-
-    public RestAssuredResponse(Response response, PathType pathType) {
-        this.response = response;
-        this.pathType = pathType;
     }
 
     @Override
@@ -48,17 +43,7 @@ public class RestAssuredResponse implements WebServiceResponse {
 
     @Override
     public Float getFloat(String path) {
-        Float value = null;
-
-        switch (pathType) {
-            case RESTASSURED:
-                value = getObject(path);
-                break;
-            case JSONPATH:
-                value = BigDecimal.valueOf((Double)getObject(path)).floatValue();
-                break;
-        }
-        return value;
+        return getObject(path);
     }
 
     @Override
@@ -82,35 +67,28 @@ public class RestAssuredResponse implements WebServiceResponse {
     }
 
     @Override
-    public <T> T getObject(Class<T> clazz) {
-        T obj = null;
-
-        switch (pathType) {
-            case JSONPATH:
-                obj = JsonPath.parse(getContentBody()).read("$", clazz);
-                break;
-            case RESTASSURED:
-                obj = response.as(clazz);
-                break;
-        }
-
-        return obj;
+    public <T> T getObject(String path) {
+        return response.path(path);
     }
 
     @Override
-    public <T> T getObject(String path) {
-        T obj = null;
+    public <T> T getObject(Class<T> clazz) {
+        return response.as(clazz);
+    }
 
-        switch (pathType) {
-            case JSONPATH:
-                obj = JsonPath.read(getContentBody(), path);
-                break;
-            case RESTASSURED:
-                obj = response.path(path);
-                break;
-        }
+    @Override
+    public <T> T getObject(String path, Class<T> clazz) {
+        return response.jsonPath().getObject(path, clazz);
+    }
 
-        return obj;
+    @Override
+    public <T> T getObjectByJsonPath(String path) {
+        return JsonPath.read(getContentBody(), path);
+    }
+
+    @Override
+    public <T> T getObjectByJsonPath(String path, Class<T> clazz) {
+        return mapper.convertValue(JsonPath.read(getContentBody(), path), clazz);
     }
 
     @Override
