@@ -27,7 +27,14 @@ public class RestAssuredResponse implements WebServiceResponse {
 
     @Override
     public String getDefaultString(String path, String defaultString) {
-        String value = getObject(path);
+        String value = null;
+
+        try {
+            value = getObject(path);
+        } catch(Exception e) {
+            LOGGER.error("Cannot get object. path : {}, Response : {}", path, getContentBody());
+            LOGGER.error("Cannot get object.", e);
+        }
 
         if (StringUtils.isEmpty(value)) {
             value = defaultString;
@@ -38,22 +45,30 @@ public class RestAssuredResponse implements WebServiceResponse {
 
     @Override
     public Integer getInteger(String path) {
-        return getObject(path);
+        return getObject(path, Integer.class);
     }
 
     @Override
     public Float getFloat(String path) {
-        return getObject(path);
+        return getObject(path, Float.class);
     }
 
     @Override
     public Double getDouble(String path) {
-        return getObject(path);
+        return getObject(path, Double.class);
     }
 
     @Override
     public boolean isEmpty(String path) {
-        return response.path(path)==null;
+        Object obj = null;
+
+        try {
+            obj = response.path(path);
+        } catch (Exception e) {
+            LOGGER.info("Cannot get object. path={}", path);
+        }
+
+        return obj==null ? true : false;
     }
 
     @Override
