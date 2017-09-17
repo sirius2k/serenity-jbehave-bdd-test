@@ -31,6 +31,7 @@
         <serenity.spring.version>1.2.2</serenity.spring.version>
         <slf4j.version>1.7.24</slf4j.version>
         <spring.framework.version>4.3.5.RELEASE</spring.framework.version>
+        <therore.logback.version>1.0.0</therore.logback.version>
         <!--webdriver.driver>firefox</webdriver.driver-->
     </properties>
 
@@ -170,6 +171,7 @@
                 <groupId>com.xebialabs.restito</groupId>
                 <artifactId>restito</artifactId>
                 <version>${resito.version}</version>
+                <scope>test</scope>
             </dependency>
 
             <!-- https://mvnrepository.com/artifact/net.serenity-bdd/serenity-spring -->
@@ -236,6 +238,14 @@
                         <pullDevelop>true</pullDevelop>
                         <pullMaster>true</pullMaster>
                         <scmCommentPrefix>[RELEASE] </scmCommentPrefix>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <configuration>
+                        <classpathDependencyExcludes>
+                            <classpathDependencyExcludes>ch.qos.logback:logback-classic</classpathDependencyExcludes>
+                        </classpathDependencyExcludes>
                     </configuration>
                 </plugin>
             </plugins>

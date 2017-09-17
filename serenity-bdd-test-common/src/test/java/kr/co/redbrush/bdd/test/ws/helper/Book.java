@@ -1,4 +1,4 @@
-package kr.co.redbrush.bdd.test.ws;
+package kr.co.redbrush.bdd.test.ws.helper;
 
 import lombok.Data;
 
