@@ -88,6 +88,8 @@ public class PostDefinition extends BaseTestDefinition {
     public void thenRequestingAPostReturns(Integer id, Integer userId) {
         WebServiceResponse response = testContextService.getLastResponse();
 
+        LOGGER.debug("Response : {}", response.getContentBody());
+
         Post post = response.getObject(Post.class);
 
         assertThat(post.getId(), equalTo(id));

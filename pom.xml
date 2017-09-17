@@ -35,6 +35,21 @@
         <!--webdriver.driver>firefox</webdriver.driver-->
     </properties>
 
+    <scm>
+        <url>https://github.com/sirius2k/serenity-jbehave-bdd-test.git</url>
+        <connection>scm:git:git://github.com/sirius2k/serenity-jbehave-bdd-test.git</connection>
+        <developerConnection>scm:git:git@github.com:sirius2k/serenity-jbehave-bdd-test.git</developerConnection>
+    </scm>
+
+    <developers>
+        <developer>
+            <email>sirius00@paran.com</email>
+            <name>Kyoungwook Park</name>
+            <url>https://github.com/sirius2k</url>
+            <id>sirius2k</id>
+        </developer>
+    </developers>
+
     <repositories>
       <repository>
         <snapshots>
@@ -57,7 +72,8 @@
       </pluginRepository>
     </pluginRepositories>
 
-    <distributionManagement>
+    <!-- Uncomment if you want to deploy to specific repository -->
+    <!--distributionManagement>
         <snapshotRepository>
             <id>nexus-snapshots</id>
             <url>http://localhost:8081/repository/maven-snapshots/</url>
@@ -66,7 +82,7 @@
             <id>nexus-releases</id>
             <url>http://localhost:8081/repository/maven-releases/</url>
         </repository>
-    </distributionManagement>
+    </distributionManagement-->
 
     <dependencyManagement>
         <dependencies>
@@ -184,4 +200,43 @@
         </dependencies>
     </dependencyManagement>
 
+    <build>
+        <pluginManagement>
+            <plugins>
+                <!--
+                    command todo release start and finish at once
+
+                    mvn -B  jgitflow:release-start jgitflow:release-finish -X -Dmaven.test.skip=true
+
+                    command todo release start and finish in steps
+
+                    mvn -B  jgitflow:release-start -X -Dmaven.test.skip=true
+                    #do some other action
+                    mvn -B  jgitflow:release-finish -X -Dmaven.test.skip=true
+                -->
+                <plugin>
+                    <groupId>external.atlassian.jgitflow</groupId>
+                    <artifactId>jgitflow-maven-plugin</artifactId>
+                    <version>1.0-m5.1</version>
+                    <configuration>
+                        <!-- For specific plugin configuration options,
+                        see the Goals documentation page -->
+                        <flowInitContext>
+                            <masterBranchName>master</masterBranchName>
+                            <developBranchName>develop</developBranchName>
+                            <featureBranchPrefix>feature-</featureBranchPrefix>
+                            <releaseBranchPrefix>release-</releaseBranchPrefix>
+                            <hotfixBranchPrefix>hotfix-</hotfixBranchPrefix>
+                            <versionTagPrefix>releasever-</versionTagPrefix>
+                        </flowInitContext>
+                        <autoVersionSubmodules>true</autoVersionSubmodules>
+                        <enableSshAgent>true</enableSshAgent>
+                        <noDeploy>true</noDeploy>
+                        <allowUntracked>true</allowUntracked>
+                        <pushReleases>true</pushReleases>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 </project>

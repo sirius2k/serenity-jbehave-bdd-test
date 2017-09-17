@@ -58,7 +58,7 @@ public class RestAssuredResponse implements WebServiceResponse {
         try {
             obj = response.path(path);
         } catch (Exception e) {
-            LOGGER.info("Cannot get object. path={}, json=\n{}", path, getContentBody());
+            LOGGER.error("Cannot get object. path={}, json=\n{}", path, getContentBody(), e);
         }
 
         return obj==null ? true : false;
@@ -81,7 +81,7 @@ public class RestAssuredResponse implements WebServiceResponse {
         try {
             obj = response.path(path);
         } catch (Exception e) {
-            LOGGER.info("Cannot get object. path={}, json=\n{}", path, getContentBody());
+            LOGGER.error("Cannot get object. path={}, json=\n{}", path, getContentBody(), e);
         }
 
         return obj;
@@ -94,7 +94,7 @@ public class RestAssuredResponse implements WebServiceResponse {
         try {
             obj = response.as(clazz);
         } catch (Exception e) {
-            LOGGER.info("Cannot get object. Class={}", clazz, getContentBody());
+            LOGGER.error("Cannot get object. Class={}, json=\n{}", clazz, getContentBody(), e);
         }
 
         return obj;
