@@ -3,6 +3,7 @@ package kr.co.redbrush.bdd.test.ws;
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.response.Response;
 import com.xebialabs.restito.server.StubServer;
+import kr.co.redbrush.bdd.test.ws.helper.Book;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;

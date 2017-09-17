@@ -1,7 +1,7 @@
 package kr.co.redbrush.bdd.test.service;
 
 import kr.co.redbrush.bdd.test.ws.RestAssuredDriver;
-import kr.co.redbrush.bdd.test.ws.WebServiceRequestBuilderFactory;
+import kr.co.redbrush.bdd.test.ws.PostWebServiceRequestBuilderFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Slf4j
 public class BaseService {
     @Autowired
-    protected WebServiceRequestBuilderFactory webServiceRequestBuilderFactory;
+    protected PostWebServiceRequestBuilderFactory webServiceRequestBuilderFactory;
 
     @Autowired
     protected RestAssuredDriver restAssuredDriver;
