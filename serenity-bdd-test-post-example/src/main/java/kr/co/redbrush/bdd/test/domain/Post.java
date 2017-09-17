@@ -1,6 +1,5 @@
 package kr.co.redbrush.bdd.test.domain;
 
-import jdk.nashorn.internal.objects.annotations.Constructor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

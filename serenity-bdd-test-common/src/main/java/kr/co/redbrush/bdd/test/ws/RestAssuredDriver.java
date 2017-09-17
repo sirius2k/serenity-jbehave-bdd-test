@@ -5,7 +5,6 @@ import com.jayway.restassured.specification.RequestSpecification;
 import kr.co.redbrush.bdd.test.exception.HttpMethodNotSpecifiedException;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 
