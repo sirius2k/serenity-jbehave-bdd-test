@@ -205,13 +205,13 @@
                 <!--
                     command todo release start and finish at once
 
-                    mvn -B  jgitflow:release-start jgitflow:release-finish -X -Dmaven.test.skip=true
+                    mvn jgitflow:release-start jgitflow:release-finish -Dmaven.test.skip=true
 
                     command todo release start and finish in steps
 
-                    mvn -B  jgitflow:release-start -X -Dmaven.test.skip=true
+                    mvn jgitflow:release-start -Dmaven.test.skip=true
                     #do some other action
-                    mvn -B  jgitflow:release-finish -X -Dmaven.test.skip=true
+                    mvn jgitflow:release-finish -Dmaven.test.skip=true
                 -->
                 <plugin>
                     <groupId>external.atlassian.jgitflow</groupId>
@@ -233,6 +233,7 @@
                         <noDeploy>true</noDeploy>
                         <allowUntracked>true</allowUntracked>
                         <pushReleases>true</pushReleases>
+                        <scmCommentPrefix>[RELEASE] </scmCommentPrefix>
                     </configuration>
                 </plugin>
             </plugins>
