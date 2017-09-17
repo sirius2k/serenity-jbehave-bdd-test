@@ -92,29 +92,31 @@ public class RestAssuredResponseTest {
     @Test
     public void testGetString() {
         String path = "store.book[0].author";
-        String expectedAuthor = "Nigel Rees";
+        String expectedValue = "Nigel Rees";
+
+        testGetString(path, expectedValue);
+    }
+
+    @Test
+    public void testGetStringWithInvalidPath() {
+        String path = "store.book[5].author";
+        String expectedValue = null;
+
+        testGetString(path, expectedValue);
+    }
+
+    private void testGetString(String path, String expectedValue) {
+        LOGGER.debug("path : {}, expectedValue value : {}", path, expectedValue);
 
         Response response = expect().get(storeUrl);
         RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
-        String author = restAssuredResponse.getString(path);
+        String actualValue = restAssuredResponse.getString(path);
 
-        LOGGER.debug("Extracted author : {}", author);
-
-        assertThat("Author was empty.", author, notNullValue());
-        assertThat("Author was not matched.", author, is(expectedAuthor));
+        assertThat("Value was not matched.", actualValue, is(expectedValue));
     }
 
     @Test
-    public void testGetDefaultStringWithNullValue() {
-        String path = "store.book[5].author";
-        String defaultValue = "Default Author";
-        String expectedValue = defaultValue;
-
-        testGetDefaultString(path, defaultValue, expectedValue);
-    }
-
-    @Test
-    public void testGetDefaultStringWithNotNullValue() {
+    public void testGetDefaultString() {
         String path = "store.book[0].author";
         String defaultValue = "Default Author";
         String expectedValue = "Nigel Rees";
@@ -122,61 +124,104 @@ public class RestAssuredResponseTest {
         testGetDefaultString(path, defaultValue, expectedValue);
     }
 
+    @Test
+    public void testGetDefaultStringWithInvalidPath() {
+        String path = "store.book[5].author";
+        String defaultValue = "Default Author";
+        String expectedValue = defaultValue;
+
+        testGetDefaultString(path, defaultValue, expectedValue);
+    }
+
+
     private void testGetDefaultString(String path, String defaultValue, String expectedValue) {
+        LOGGER.debug("path : {}, defaultValue : {}, expectedValue : {}", path, defaultValue, expectedValue);
+
         Response response = expect().get(storeUrl);
         RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
 
-        LOGGER.debug("path : {}, defaultValue : {}, expectedValue : {}", path, defaultValue, expectedValue);
+        String actualValue = restAssuredResponse.getDefaultString(path, defaultValue);
 
-        String author = restAssuredResponse.getDefaultString(path, defaultValue);
-
-        assertThat("Author was empty.", author, notNullValue());
-        assertThat("Author was not matched.", author, is(expectedValue));
+        assertThat("Value was empty.", actualValue, notNullValue());
+        assertThat("Value was not matched.", actualValue, is(expectedValue));
     }
 
     @Test
     public void testGetInteger() {
         String path = "expensive";
-        Integer expectedExpensive = 10;
+        Integer expectedValue = 10;
+
+        testGetInteger(path, expectedValue);
+    }
+
+    @Test
+    public void testGetIntegerWithInvalidPath() {
+        String path = "expen";
+        Integer expectedValue = null;
+
+        testGetInteger(path, expectedValue);
+    }
+    
+    private void testGetInteger(String path, Integer expectedValue) {
+        LOGGER.debug("path : {}, expectedValue : {}", path, expectedValue);
 
         Response response = expect().get(storeUrl);
         RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
-        Integer expensive = restAssuredResponse.getInteger(path);
+        Integer actualValue = restAssuredResponse.getInteger(path);
 
-        LOGGER.debug("Extracted expensive : {}", expectedExpensive);
-
-        assertThat("expensive was empty.", expensive, notNullValue());
-        assertThat("expensive was not matched.", expensive, is(expectedExpensive));
+        assertThat("Value was not matched.", actualValue, is(expectedValue));
     }
 
     @Test
     public void testGetFloat() {
         String path = "store.book[0].price";
-        Float expectedPrice = 8.95f;
+        Float expectedValue = 8.95f;
+
+        testGetFloat(path, expectedValue);
+    }
+
+    @Test
+    public void testGetFloatWithInvalidPath() {
+        String path = "store.book[5].price";
+        Float expectedValue = null;
+
+        testGetFloat(path, expectedValue);
+    }
+
+    private void testGetFloat(String path, Float expectedValue) {
+        LOGGER.debug("path : {}, expectedValue : {}", path, expectedValue);
 
         Response response = expect().get(storeUrl);
         RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
-        Float price = restAssuredResponse.getFloat(path);
+        Float actualValue = restAssuredResponse.getFloat(path);
 
-        LOGGER.debug("Extracted expensive : {}", expectedPrice);
-
-        assertThat("price was empty.", price, notNullValue());
-        assertThat("price was not matched.", price, is(expectedPrice));
+        assertThat("Value was not matched.", actualValue, is(expectedValue));
     }
 
     @Test
     public void testGetDouble() {
         String path = "store.book[0].price";
-        Double expectedPrice = 8.95d;
+        Double expectedValue = 8.95d;
+
+        testGetDouble(path, expectedValue);
+    }
+
+    @Test
+    public void testGetDoubleWithInvalidPath() {
+        String path = "store.book[5].price";
+        Double expectedValue = null;
+
+        testGetDouble(path, expectedValue);
+    }
+
+    private void testGetDouble(String path, Double expectedValue) {
+        LOGGER.debug("path : {}, expectedValue : {}", path, expectedValue);
 
         Response response = expect().get(storeUrl);
         RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
-        Double price = restAssuredResponse.getDouble(path);
+        Double actualValue = restAssuredResponse.getDouble(path);
 
-        LOGGER.debug("Extracted expensive : {}", expectedPrice);
-
-        assertThat("price was empty.", price, notNullValue());
-        assertThat("price was not matched.", price, is(expectedPrice));
+        assertThat("Value was not matched.", actualValue, is(expectedValue));
     }
 
     @Test
@@ -207,13 +252,16 @@ public class RestAssuredResponseTest {
         assertThat("Book was not matched.", EqualsBuilder.reflectionEquals(expectedBook, book), is(true));
     }
 
-    @Test (expected = IllegalArgumentException.class)
-    public void testGetObjectWithNotExistingValue() {
+    @Test
+    public void testGetObjectWithInvalidPath() {
         String path = "store.book[5].author";
 
         Response response = expect().get(storeUrl);
         RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
-        restAssuredResponse.getObject(path);
+        String value = restAssuredResponse.getObject(path);
+        String expectedValue = null;
+
+        assertThat("Value was not matched.", value, is(expectedValue));
     }
 
     @Test

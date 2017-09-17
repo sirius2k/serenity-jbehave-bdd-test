@@ -27,14 +27,7 @@ public class RestAssuredResponse implements WebServiceResponse {
 
     @Override
     public String getDefaultString(String path, String defaultString) {
-        String value = null;
-
-        try {
-            value = getObject(path);
-        } catch(Exception e) {
-            LOGGER.error("Cannot get object. path : {}, Response : {}", path, getContentBody());
-            LOGGER.error("Cannot get object.", e);
-        }
+        String value = getObject(path, String.class);;
 
         if (StringUtils.isEmpty(value)) {
             value = defaultString;
@@ -65,7 +58,7 @@ public class RestAssuredResponse implements WebServiceResponse {
         try {
             obj = response.path(path);
         } catch (Exception e) {
-            LOGGER.info("Cannot get object. path={}", path);
+            LOGGER.info("Cannot get object. path={}, json=\n{}", path, getContentBody());
         }
 
         return obj==null ? true : false;
@@ -83,17 +76,41 @@ public class RestAssuredResponse implements WebServiceResponse {
 
     @Override
     public <T> T getObject(String path) {
-        return response.path(path);
+        T obj = null;
+
+        try {
+            obj = response.path(path);
+        } catch (Exception e) {
+            LOGGER.info("Cannot get object. path={}, json=\n{}", path, getContentBody());
+        }
+
+        return obj;
     }
 
     @Override
     public <T> T getObject(Class<T> clazz) {
-        return response.as(clazz);
+        T obj = null;
+
+        try {
+            obj = response.as(clazz);
+        } catch (Exception e) {
+            LOGGER.info("Cannot get object. Class={}", clazz, getContentBody());
+        }
+
+        return obj;
     }
 
     @Override
     public <T> T getObject(String path, Class<T> clazz) {
-        return response.jsonPath().getObject(path, clazz);
+        T obj = null;
+
+        try {
+            obj = response.jsonPath().getObject(path, clazz);
+        } catch (Exception e) {
+            LOGGER.info("Cannot get object. Class={}", clazz, getContentBody());
+        }
+
+        return obj;
     }
 
     @Override
