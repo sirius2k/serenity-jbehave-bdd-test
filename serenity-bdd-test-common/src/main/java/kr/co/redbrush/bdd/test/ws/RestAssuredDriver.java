@@ -16,9 +16,6 @@ import static net.serenitybdd.rest.SerenityRest.given;
  */
 @Component
 public class RestAssuredDriver {
-    @Value("${restAssured.response.pathType:RESTASSURED}")
-    private PathType pathType;
-
     public WebServiceResponse get(WebServiceRequest request) {
         request.setHttpMethod(HttpMethod.GET);
 
