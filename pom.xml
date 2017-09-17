@@ -233,6 +233,8 @@
                         <noDeploy>true</noDeploy>
                         <allowUntracked>true</allowUntracked>
                         <pushReleases>true</pushReleases>
+                        <pullDevelop>true</pullDevelop>
+                        <pullMaster>true</pullMaster>
                         <scmCommentPrefix>[RELEASE] </scmCommentPrefix>
                     </configuration>
                 </plugin>
