@@ -27,7 +27,7 @@ public class RestAssuredResponse implements WebServiceResponse {
 
     @Override
     public String getDefaultString(String path, String defaultString) {
-        String value = getObject(path);
+        String value = getObject(path, String.class);;
 
         if (StringUtils.isEmpty(value)) {
             value = defaultString;
@@ -38,22 +38,30 @@ public class RestAssuredResponse implements WebServiceResponse {
 
     @Override
     public Integer getInteger(String path) {
-        return getObject(path);
+        return getObject(path, Integer.class);
     }
 
     @Override
     public Float getFloat(String path) {
-        return getObject(path);
+        return getObject(path, Float.class);
     }
 
     @Override
     public Double getDouble(String path) {
-        return getObject(path);
+        return getObject(path, Double.class);
     }
 
     @Override
     public boolean isEmpty(String path) {
-        return response.path(path)==null;
+        Object obj = null;
+
+        try {
+            obj = response.path(path);
+        } catch (Exception e) {
+            LOGGER.error("Cannot get object. path={}, json=\n{}", path, getContentBody(), e);
+        }
+
+        return obj==null ? true : false;
     }
 
     @Override
@@ -68,17 +76,41 @@ public class RestAssuredResponse implements WebServiceResponse {
 
     @Override
     public <T> T getObject(String path) {
-        return response.path(path);
+        T obj = null;
+
+        try {
+            obj = response.path(path);
+        } catch (Exception e) {
+            LOGGER.error("Cannot get object. path={}, json=\n{}", path, getContentBody(), e);
+        }
+
+        return obj;
     }
 
     @Override
     public <T> T getObject(Class<T> clazz) {
-        return response.as(clazz);
+        T obj = null;
+
+        try {
+            obj = response.as(clazz);
+        } catch (Exception e) {
+            LOGGER.error("Cannot get object. Class={}, json=\n{}", clazz, getContentBody(), e);
+        }
+
+        return obj;
     }
 
     @Override
     public <T> T getObject(String path, Class<T> clazz) {
-        return response.jsonPath().getObject(path, clazz);
+        T obj = null;
+
+        try {
+            obj = response.jsonPath().getObject(path, clazz);
+        } catch (Exception e) {
+            LOGGER.info("Cannot get object. Class={}", clazz, getContentBody());
+        }
+
+        return obj;
     }
 
     @Override

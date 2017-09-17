@@ -4,6 +4,8 @@ import org.hamcrest.Matcher;
 
 /**
  * Created by kwpark on 18/04/2017.
+ *
+ * Object should return null instance of throwing exception when the value is not exists with given path.
  */
 public interface WebServiceResponse {
     String getString(String path);
