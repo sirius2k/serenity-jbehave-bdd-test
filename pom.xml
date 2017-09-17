@@ -228,7 +228,7 @@
                             <featureBranchPrefix>feature-</featureBranchPrefix>
                             <releaseBranchPrefix>release-</releaseBranchPrefix>
                             <hotfixBranchPrefix>hotfix-</hotfixBranchPrefix>
-                            <versionTagPrefix>releasever-</versionTagPrefix>
+                            <versionTagPrefix>Release </versionTagPrefix>
                         </flowInitContext>
                         <autoVersionSubmodules>true</autoVersionSubmodules>
                         <enableSshAgent>true</enableSshAgent>
