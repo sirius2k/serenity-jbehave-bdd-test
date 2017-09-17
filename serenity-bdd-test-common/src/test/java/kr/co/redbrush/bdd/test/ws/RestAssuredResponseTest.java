@@ -25,6 +25,7 @@ import static com.xebialabs.restito.semantics.Action.*;
 import static com.xebialabs.restito.semantics.Condition.get;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.notNullValue;
@@ -240,6 +241,18 @@ public class RestAssuredResponseTest {
     }
 
     @Test
+    public void testGetObjectWithInvalidPath() {
+        String path = "store.book[5].author";
+
+        Response response = expect().get(storeUrl);
+        RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
+        String value = restAssuredResponse.getObject(path);
+        String expectedValue = null;
+
+        assertThat("Value was not matched.", value, is(expectedValue));
+    }
+
+    @Test
     public void testGetObjectWithSpecificType() {
         Response response = expect().get(bookUrl);
         RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
@@ -253,30 +266,44 @@ public class RestAssuredResponseTest {
     }
 
     @Test
-    public void testGetObjectWithInvalidPath() {
-        String path = "store.book[5].author";
-
+    public void testGetObjectWithSpecificTypeAndInvalidClass() {
         Response response = expect().get(storeUrl);
         RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
-        String value = restAssuredResponse.getObject(path);
-        String expectedValue = null;
+        Book book = restAssuredResponse.getObject(Book.class);
 
-        assertThat("Value was not matched.", value, is(expectedValue));
+        LOGGER.debug("Extracted book : {}", book);
+
+        assertThat("Book was empty.", book, nullValue());
     }
 
     @Test
-    public void testGetObjectWithSpecificTypeAndPath() {
+    public void testGetObjectWithPathAndSpecificType() {
         String path = "store.book[0]";
         Book expectedBook = createBook();
+
+        testGetObjectWithSpecificTypeAndPath(path, Book.class, expectedBook);
+    }
+
+    @Test
+    public void testGetObjectWithPathAndSpecificTypeAndInvalidPath() {
+        String path = "store.book[5]";
+        Book expectedValue = null;
+
+        testGetObjectWithSpecificTypeAndPath(path, Book.class, expectedValue);
+    }
+
+    private void testGetObjectWithSpecificTypeAndPath(String path, Class clazz, Object expectedValue) {
+        LOGGER.debug("Path : {}, Class : {}", path, clazz);
 
         Response response = expect().get(storeUrl);
         RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
         Book book = restAssuredResponse.getObject(path, Book.class);
 
-        LOGGER.debug("Extracted book : {}", book);
-
-        assertThat("Book was empty.", book, notNullValue());
-        assertThat("Book was not matched.", EqualsBuilder.reflectionEquals(expectedBook, book), is(true));
+        if (expectedValue == null) {
+            assertThat("Book was not matched.", book, is(expectedValue));
+        } else {
+            assertThat("Book was not matched.", EqualsBuilder.reflectionEquals(expectedValue, book), is(true));
+        }
     }
 
     private Book createBook() {
