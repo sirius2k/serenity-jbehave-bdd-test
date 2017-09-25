@@ -25,6 +25,10 @@ public class SocketIOFactory {
     }
 
     public Socket createSocket(String serverHost) throws URISyntaxException {
+        return IO.socket(serverHost, this.options);
+    }
+
+    public Socket createSocket(String serverHost, IO.Options options) throws URISyntaxException {
         return IO.socket(serverHost, options);
     }
 }
