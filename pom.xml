@@ -8,6 +8,7 @@
     <modules>
         <module>serenity-bdd-test-common</module>
         <module>serenity-bdd-test-post-example</module>
+        <module>serenity-bdd-test-socket-io-server</module>
     </modules>
 
     <name>serenity-bdd-test-post-parent</name>

@@ -11,19 +11,20 @@ import javax.annotation.PostConstruct;
 @Slf4j
 public abstract class SpringWebServiceRequestBuilderFactory implements WebServiceRequestBuilderFactory {
     @Value("${server.host}")
-    private String serverHost;
+    protected String serverHost;
 
     @Value("${rest.assured.default.contentType:application/json; charset=UTF-8}")
-    private String defaultContentType;
+    protected String defaultContentType;
 
     @Value("${rest.assured.default.urlEncodingEnabled:false}")
-    private boolean urlEncodingEnabled;
+    protected boolean urlEncodingEnabled;
 
     @PostConstruct
     public void init() {
         LOGGER.debug("<Post Construct> ServerHost : {}, defaultContentType : {}", serverHost, defaultContentType);
     }
 
+    @Override
     public WebServiceRequest.WebServiceRequestBuilder createInstance() {
         WebServiceRequest.WebServiceRequestBuilder builder = WebServiceRequest.builder()
                 .serverHost(serverHost)

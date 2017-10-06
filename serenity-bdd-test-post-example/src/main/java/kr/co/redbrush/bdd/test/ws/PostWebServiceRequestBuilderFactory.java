@@ -1,7 +1,6 @@
 package kr.co.redbrush.bdd.test.ws;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -13,14 +12,6 @@ import java.util.Map;
 @Component
 @Slf4j
 public class PostWebServiceRequestBuilderFactory extends SpringWebServiceRequestBuilderFactory {
-    @Value("${server.host}")
-    private String serverHost;
-
-    @Value("${rest.assured.default.contentType:application/json; charset=UTF-8}")
-    private String defaultContentType;
-
-    @Value("${rest.assured.default.urlEncodingEnabled:false}")
-    private boolean urlEncodingEnabled;
 
     @PostConstruct
     public void init() {
