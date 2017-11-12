@@ -212,7 +212,7 @@
             <plugin>
                 <groupId>net.serenity-bdd.maven.plugins</groupId>
                 <artifactId>serenity-maven-plugin</artifactId>
-                <version>${serenity.version}</version>
+                <version>${serenity.maven.plugin.version}</version>
                 <executions>
                     <execution>
                         <id>serenity-reports</id>
