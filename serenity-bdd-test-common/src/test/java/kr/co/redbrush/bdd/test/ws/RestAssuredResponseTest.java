@@ -1,7 +1,7 @@
 package kr.co.redbrush.bdd.test.ws;
 
-import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.response.Response;
+import io.restassured.RestAssured;
+import io.restassured.response.Response;
 import com.xebialabs.restito.server.StubServer;
 import kr.co.redbrush.bdd.test.ws.helper.Book;
 import lombok.extern.slf4j.Slf4j;
@@ -20,13 +20,11 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.jayway.restassured.RestAssured.expect;
+import static io.restassured.RestAssured.expect;
 import static com.xebialabs.restito.builder.stub.StubHttp.whenHttp;
 import static com.xebialabs.restito.semantics.Action.*;
 import static com.xebialabs.restito.semantics.Condition.get;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.notNullValue;
@@ -110,7 +108,7 @@ public class RestAssuredResponseTest {
     private void testGetString(String path, String expectedValue) {
         LOGGER.debug("path : {}, expectedValue value : {}", path, expectedValue);
 
-        Response response = expect().get(storeUrl);
+        Response response = expect().request().get(storeUrl);
         RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
         String actualValue = restAssuredResponse.getString(path);
 
@@ -139,7 +137,7 @@ public class RestAssuredResponseTest {
     private void testGetDefaultString(String path, String defaultValue, String expectedValue) {
         LOGGER.debug("path : {}, defaultValue : {}, expectedValue : {}", path, defaultValue, expectedValue);
 
-        Response response = expect().get(storeUrl);
+        Response response = expect().request().get(storeUrl);
         RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
 
         String actualValue = restAssuredResponse.getDefaultString(path, defaultValue);
@@ -167,7 +165,7 @@ public class RestAssuredResponseTest {
     private void testGetInteger(String path, Integer expectedValue) {
         LOGGER.debug("path : {}, expectedValue : {}", path, expectedValue);
 
-        Response response = expect().get(storeUrl);
+        Response response = expect().request().get(storeUrl);
         RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
         Integer actualValue = restAssuredResponse.getInteger(path);
 
@@ -193,7 +191,7 @@ public class RestAssuredResponseTest {
     private void testGetFloat(String path, Float expectedValue) {
         LOGGER.debug("path : {}, expectedValue : {}", path, expectedValue);
 
-        Response response = expect().get(storeUrl);
+        Response response = expect().request().get(storeUrl);
         RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
         Float actualValue = restAssuredResponse.getFloat(path);
 
@@ -219,7 +217,7 @@ public class RestAssuredResponseTest {
     private void testGetDouble(String path, Double expectedValue) {
         LOGGER.debug("path : {}, expectedValue : {}", path, expectedValue);
 
-        Response response = expect().get(storeUrl);
+        Response response = expect().request().get(storeUrl);
         RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
         Double actualValue = restAssuredResponse.getDouble(path);
 
@@ -231,7 +229,7 @@ public class RestAssuredResponseTest {
         String path = "store.book.author";
         List<String> expectedAuthors = Arrays.asList("Nigel Rees", "Evelyn Waugh", "Herman Melville", "J. R. R. Tolkien");
 
-        Response response = expect().get(storeUrl);
+        Response response = expect().request().get(storeUrl);
         RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
         List<String> authors = restAssuredResponse.getObject(path);
 
@@ -245,7 +243,7 @@ public class RestAssuredResponseTest {
     public void testGetObjectWithInvalidPath() {
         String path = "store.book[5].author";
 
-        Response response = expect().get(storeUrl);
+        Response response = expect().request().get(storeUrl);
         RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
         String value = restAssuredResponse.getObject(path);
         String expectedValue = null;
@@ -255,7 +253,7 @@ public class RestAssuredResponseTest {
 
     @Test
     public void testGetObjectWithSpecificType() {
-        Response response = expect().get(bookUrl);
+        Response response = expect().request().get(bookUrl);
         RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
         Book expectedBook = createBook();
         Book book = restAssuredResponse.getObject(Book.class);
@@ -268,7 +266,7 @@ public class RestAssuredResponseTest {
 
     @Test
     public void testGetObjectWithSpecificTypeAndInvalidClass() {
-        Response response = expect().get(storeUrl);
+        Response response = expect().request().get(storeUrl);
         RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
         Book book = restAssuredResponse.getObject(Book.class);
 
@@ -296,7 +294,7 @@ public class RestAssuredResponseTest {
     private void testGetObjectWithSpecificTypeAndPath(String path, Class clazz, Object expectedValue) {
         LOGGER.debug("Path : {}, Class : {}", path, clazz);
 
-        Response response = expect().get(storeUrl);
+        Response response = expect().request().get(storeUrl);
         RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
         Book book = restAssuredResponse.getObject(path, Book.class);
 
@@ -322,7 +320,7 @@ public class RestAssuredResponseTest {
         String path = "$.store.book[*].author";
         List<String> expectedAuthors = Arrays.asList("Nigel Rees", "Evelyn Waugh", "Herman Melville", "J. R. R. Tolkien");
 
-        Response response = expect().get(storeUrl);
+        Response response = expect().request().get(storeUrl);
         RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
         List<String> authors = restAssuredResponse.getObjectByJsonPath(path);
 
@@ -337,7 +335,7 @@ public class RestAssuredResponseTest {
         String path = "$.store.book[0]";
         Book expectedBook = createBook();
 
-        Response response = expect().get(storeUrl);
+        Response response = expect().request().get(storeUrl);
         RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
         Book book = restAssuredResponse.getObjectByJsonPath(path, Book.class);
 
@@ -353,7 +351,7 @@ public class RestAssuredResponseTest {
         String path2 = "store.book[5].author";
         String expectedAuthor = "Nigel Rees";
 
-        Response response = expect().get(storeUrl);
+        Response response = expect().request().get(storeUrl);
         RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
 
         boolean empty1 = restAssuredResponse.isEmpty(path1);
@@ -366,7 +364,7 @@ public class RestAssuredResponseTest {
     @Test
     public void testGetStatusCode() {
         int expectedStatusCode = 200;
-        Response response = expect().get(storeUrl);
+        Response response = expect().request().get(storeUrl);
         RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
 
         int statusCode = restAssuredResponse.getStatusCode();
@@ -376,7 +374,7 @@ public class RestAssuredResponseTest {
 
     @Test
     public void testGetContentBody() {
-        Response response = expect().get(storeUrl);
+        Response response = expect().request().get(storeUrl);
         RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
 
         String contentBody = restAssuredResponse.getContentBody();
@@ -386,7 +384,7 @@ public class RestAssuredResponseTest {
 
     @Test
     public void testBodyMatches() {
-        Response response = expect().get(storeUrl);
+        Response response = expect().request().get(storeUrl);
         RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
         String var1 = "store.book[0]";
         Matcher var2 = null;

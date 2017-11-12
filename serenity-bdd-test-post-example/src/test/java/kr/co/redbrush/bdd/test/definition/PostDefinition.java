@@ -1,5 +1,7 @@
 package kr.co.redbrush.bdd.test.definition;
 
+import io.restassured.RestAssured;
+import io.restassured.parsing.Parser;
 import kr.co.redbrush.bdd.test.domain.Post;
 import kr.co.redbrush.bdd.test.steps.PostSteps;
 import kr.co.redbrush.bdd.test.ws.WebServiceResponse;
@@ -26,8 +28,12 @@ public class PostDefinition extends BaseTestDefinition {
     public void init() {
     }
 
-    @AfterScenario
+    @BeforeScenario
     public void before() {
+    }
+
+    @AfterScenario
+    public void after() {
         testContextService.clearContext();
 
         LOGGER.info("After scenario called. TestContext is cleared.");

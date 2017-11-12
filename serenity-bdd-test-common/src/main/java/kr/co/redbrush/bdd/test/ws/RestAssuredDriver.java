@@ -1,11 +1,12 @@
 package kr.co.redbrush.bdd.test.ws;
 
-import com.jayway.restassured.response.Response;
-import com.jayway.restassured.specification.RequestSpecification;
+import io.restassured.RestAssured;
+import io.restassured.parsing.Parser;
+import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 import kr.co.redbrush.bdd.test.exception.HttpMethodNotSpecifiedException;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +17,8 @@ import static net.serenitybdd.rest.SerenityRest.given;
  */
 @Component
 public class RestAssuredDriver {
+
+
     public WebServiceResponse get(WebServiceRequest request) {
         request.setHttpMethod(HttpMethod.GET);
 
