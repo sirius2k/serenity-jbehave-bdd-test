@@ -21,4 +21,8 @@ public class TestContext {
     public void put(String key, Object obj) {
         contextMap.put(key, obj);
     }
+
+    public void remove(String key) {
+        contextMap.remove(key);
+    }
 }
