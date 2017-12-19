@@ -27,4 +27,6 @@ public class TestContextHolder {
     public static TestContext createEmptyContext() {
         return new TestContext();
     }
+
+    public static ThreadLocal<TestContext> getContextHolder() { return contextHolder; }
 }

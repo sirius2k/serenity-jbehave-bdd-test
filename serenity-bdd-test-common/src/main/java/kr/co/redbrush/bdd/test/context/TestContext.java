@@ -18,6 +18,10 @@ public class TestContext {
         return (T)contextMap.get(key);
     }
 
+    public <T> T get(String key, Class<T> clazz) {
+        return (T)contextMap.get(key);
+    }
+
     public void put(String key, Object obj) {
         contextMap.put(key, obj);
     }
