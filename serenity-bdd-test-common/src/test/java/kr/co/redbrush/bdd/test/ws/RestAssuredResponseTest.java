@@ -1,8 +1,8 @@
 package kr.co.redbrush.bdd.test.ws;
 
+import com.xebialabs.restito.server.StubServer;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
-import com.xebialabs.restito.server.StubServer;
 import kr.co.redbrush.bdd.test.ws.helper.Book;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -20,10 +20,10 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
-import static io.restassured.RestAssured.expect;
 import static com.xebialabs.restito.builder.stub.StubHttp.whenHttp;
 import static com.xebialabs.restito.semantics.Action.*;
 import static com.xebialabs.restito.semantics.Condition.get;
+import static io.restassured.RestAssured.expect;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;

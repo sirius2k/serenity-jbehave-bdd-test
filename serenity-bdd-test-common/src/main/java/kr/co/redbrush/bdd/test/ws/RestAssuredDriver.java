@@ -1,14 +1,20 @@
 package kr.co.redbrush.bdd.test.ws;
 
-import io.restassured.RestAssured;
-import io.restassured.parsing.Parser;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import kr.co.redbrush.bdd.test.exception.HttpMethodNotSpecifiedException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
+
+import javax.annotation.PostConstruct;
+import java.util.Collection;
+import java.util.Map;
 
 import static net.serenitybdd.rest.SerenityRest.given;
 
@@ -16,8 +22,25 @@ import static net.serenitybdd.rest.SerenityRest.given;
  * Created by kwpark on 19/03/2017.
  */
 @Component
+@Slf4j
 public class RestAssuredDriver {
+    @Value("${server.host}")
+    protected String serverHost;
 
+    @Value("${server.endpoint.warmup}")
+    protected String warmUpEndpoint;
+
+    @PostConstruct
+    public void init() {
+        LOGGER.info("Warmup HTTP connection with dummy request prior to taking any measurements. Endpoint : {}{}", serverHost, warmUpEndpoint);
+
+        if (StringUtils.isNotEmpty(serverHost) && StringUtils.isNotEmpty(warmUpEndpoint)) {
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<Void> response  = restTemplate.getForEntity(serverHost + warmUpEndpoint, Void.class);
+
+            LOGGER.info("Warmup result. Status Code : {}", response.getStatusCode());
+        }
+    }
 
     public WebServiceResponse get(WebServiceRequest request) {
         request.setHttpMethod(HttpMethod.GET);
@@ -79,15 +102,26 @@ public class RestAssuredDriver {
         }
 
         if (request.getContent()!=null) {
-            requestSpec.content(request.getContent());
+            requestSpec.body(request.getContent());
         }
 
         if (MapUtils.isNotEmpty(request.getPathParameters())) {
-            requestSpec.pathParameters(request.getPathParameters());
+            requestSpec.pathParams(request.getPathParameters());
         }
 
         if (MapUtils.isNotEmpty(request.getQueryParameters())) {
-            requestSpec.queryParameters(request.getQueryParameters());
+            requestSpec.queryParams(request.getQueryParameters());
+        }
+
+        if (MapUtils.isNotEmpty(request.getQueryParameters())) {
+            Map<String, Object> queryMap = request.getQueryParameters();
+            for (String key : queryMap.keySet()) {
+                if (queryMap.get(key) instanceof Collection) {
+                    requestSpec.queryParam(key, (Collection<?>) queryMap.get(key));
+                } else {
+                    requestSpec.queryParam(key, queryMap.get(key));
+                }
+            }
         }
 
         if (MapUtils.isNotEmpty(request.getHeaders())) {
@@ -100,5 +134,4 @@ public class RestAssuredDriver {
 
         return requestSpec;
     }
-
 }

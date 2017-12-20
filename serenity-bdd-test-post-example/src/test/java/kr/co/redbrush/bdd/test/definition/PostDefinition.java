@@ -1,7 +1,5 @@
 package kr.co.redbrush.bdd.test.definition;
 
-import io.restassured.RestAssured;
-import io.restassured.parsing.Parser;
 import kr.co.redbrush.bdd.test.domain.Post;
 import kr.co.redbrush.bdd.test.steps.PostSteps;
 import kr.co.redbrush.bdd.test.ws.WebServiceResponse;
