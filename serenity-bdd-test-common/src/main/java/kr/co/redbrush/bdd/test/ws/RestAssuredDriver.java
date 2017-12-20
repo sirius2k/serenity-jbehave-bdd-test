@@ -6,6 +6,7 @@ import kr.co.redbrush.bdd.test.exception.HttpMethodNotSpecifiedException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -30,12 +31,14 @@ public class RestAssuredDriver {
     @Value("${server.endpoint.warmup}")
     protected String warmUpEndpoint;
 
+    @Autowired
+    private RestTemplate restTemplate;
+
     @PostConstruct
     public void init() {
         LOGGER.info("Warmup HTTP connection with dummy request prior to taking any measurements. Endpoint : {}{}", serverHost, warmUpEndpoint);
 
         if (StringUtils.isNotEmpty(serverHost) && StringUtils.isNotEmpty(warmUpEndpoint)) {
-            RestTemplate restTemplate = new RestTemplate();
             ResponseEntity<Void> response  = restTemplate.getForEntity(serverHost + warmUpEndpoint, Void.class);
 
             LOGGER.info("Warmup result. Status Code : {}", response.getStatusCode());
@@ -66,13 +69,17 @@ public class RestAssuredDriver {
         return sendRequest(request);
     }
 
-    private WebServiceResponse sendRequest(WebServiceRequest request) {
-        RequestSpecification requestSpec = createRequestSpecification(request);
-        Response response = null;
-
+    public WebServiceResponse request(WebServiceRequest request) {
         if (request.getHttpMethod()==null) {
             throw new HttpMethodNotSpecifiedException("HttpMethod was not specified.");
         }
+
+        return sendRequest(request);
+    }
+
+    private WebServiceResponse sendRequest(WebServiceRequest request) {
+        RequestSpecification requestSpec = createRequestSpecification(request);
+        Response response = null;
 
         switch (request.getHttpMethod()) {
             case GET:
@@ -107,10 +114,6 @@ public class RestAssuredDriver {
 
         if (MapUtils.isNotEmpty(request.getPathParameters())) {
             requestSpec.pathParams(request.getPathParameters());
-        }
-
-        if (MapUtils.isNotEmpty(request.getQueryParameters())) {
-            requestSpec.queryParams(request.getQueryParameters());
         }
 
         if (MapUtils.isNotEmpty(request.getQueryParameters())) {

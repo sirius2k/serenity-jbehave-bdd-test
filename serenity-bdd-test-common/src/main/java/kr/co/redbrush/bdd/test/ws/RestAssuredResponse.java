@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import io.restassured.response.Response;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hamcrest.Matcher;
@@ -14,6 +15,7 @@ import org.hamcrest.Matcher;
 @Slf4j
 public class RestAssuredResponse implements WebServiceResponse {
     private static final ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    @Getter
     private Response response;
 
     public RestAssuredResponse(Response response) {
