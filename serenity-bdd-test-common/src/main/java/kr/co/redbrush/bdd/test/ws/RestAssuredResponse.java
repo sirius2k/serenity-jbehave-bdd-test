@@ -44,6 +44,11 @@ public class RestAssuredResponse implements WebServiceResponse {
     }
 
     @Override
+    public Long getLong(String path) {
+        return getObject(path, Long.class);
+    }
+
+    @Override
     public Float getFloat(String path) {
         return getObject(path, Float.class);
     }
@@ -128,5 +133,12 @@ public class RestAssuredResponse implements WebServiceResponse {
     @Override
     public void bodyMatches(String var1, Matcher<?> var2, Object... var3) {
         response.then().body(var1, var2, var3);
+    }
+
+    // this is a vague measurement provided by REST Assured to correlate with the server request processing time
+    // since the response time will include the HTTP round trip and REST Assured processing time among other things
+    @Override
+    public Long getResponseTime() {
+        return response.then().extract().time();
     }
 }

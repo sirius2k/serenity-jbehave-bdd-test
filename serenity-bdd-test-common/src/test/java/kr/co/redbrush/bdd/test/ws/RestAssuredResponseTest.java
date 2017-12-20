@@ -173,6 +173,32 @@ public class RestAssuredResponseTest {
     }
 
     @Test
+    public void testGetLong() {
+        String path = "expensive";
+        Long expectedValue = 10L;
+
+        testGetLong(path, expectedValue);
+    }
+
+    @Test
+    public void testGetLongWithInvalidPath() {
+        String path = "expen";
+        Long expectedValue = null;
+
+        testGetLong(path, expectedValue);
+    }
+
+    private void testGetLong(String path, Long expectedValue) {
+        LOGGER.debug("path : {}, expectedValue : {}", path, expectedValue);
+
+        Response response = expect().request().get(storeUrl);
+        RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
+        Long actualValue = restAssuredResponse.getLong(path);
+
+        assertThat("Value was not matched.", actualValue, is(expectedValue));
+    }
+
+    @Test
     public void testGetFloat() {
         String path = "store.book[0].price";
         Float expectedValue = 8.95f;
@@ -391,5 +417,17 @@ public class RestAssuredResponseTest {
         Object var3 = null;
 
         restAssuredResponse.bodyMatches("store.book[0].author", equalTo("Nigel Rees"));
+    }
+
+    @Test
+    public void testGetResponseTime() {
+        Response response = expect().request().get(storeUrl);
+        RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
+
+        Long responseTime = restAssuredResponse.getResponseTime();
+
+        LOGGER.debug("Response time : {}", responseTime);
+
+        assertThat("Unexpected response time.", responseTime, notNullValue());
     }
 }
