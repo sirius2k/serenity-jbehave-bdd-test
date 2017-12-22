@@ -47,6 +47,14 @@ public class HtmlAggregateReporterTest {
 
     @Test
     public void testReport() {
+        // https://stackoverflow.com/questions/44405897/org-apache-velocity-exception-resourcenotfoundexception-unable-to-find-resource
+        /*
+VelocityEngine ve = new VelocityEngine();
+        ve.setProperty(RuntimeConstants.RESOURCE_LOADER, "class");
+        ve.setProperty("class.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
+        ve.init();
+        Template tempalte = ve.getTemplate("templates/email/test.vm");
+         */
         reporter.report();
     }
 }
