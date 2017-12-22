@@ -5,8 +5,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.io.File;
 import java.util.Date;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 @Configuration
 public class MetricsConfig {
@@ -19,9 +21,6 @@ public class MetricsConfig {
     @Value("${metrics.report.dir:target/site")
     private String reportDir;
 
-    @Value("${metrics.report.file:target/site")
-    private String reportFile;
-
     @Bean
     public MetricRegistry metricRegistry() {
         return new MetricRegistry();
@@ -29,14 +28,15 @@ public class MetricsConfig {
 
     @Bean
     public HtmlAggregateReporter htmlReporter() {
-        HtmlAggregateReporter reporter = HtmlAggregateReporter.builder()
-                .reportDir(reportDir)
-                .templateFile(templateFile)
-                .locale(Locale.US)
-                .startDate(new Date())
+        HtmlAggregateReporter reporter = HtmlAggregateReporter.forRegistry(metricRegistry())
+                .formatFor(Locale.US)
+                .convertRatesTo(TimeUnit.SECONDS)
+                .convertDurationsTo(TimeUnit.SECONDS)
                 .warningLimitNumber(responseTimeWarningLimit)
-                .build();
+                .templateHtmlFile(new File(templateFile))
+                .build(new File(reportDir));
 
         return reporter;
     }
 }
+
