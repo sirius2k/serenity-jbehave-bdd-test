@@ -40,7 +40,7 @@ public class MetricsTest {
     }
 
     @Test
-    public void testUpdateMetrics() {
+    public void testUpdate() {
         ReflectionTestUtils.setField(metrics, "metricsEnabled", true);
 
         metrics.updateMetric(registerName, responseTime);

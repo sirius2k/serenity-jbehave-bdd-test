@@ -2,7 +2,6 @@ package kr.co.redbrush.bdd.test.metrics;
 
 import com.codahale.metrics.*;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
@@ -17,8 +16,8 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class HtmlAggregateReporter extends ScheduledReporter {
+    public static final String REPORT_FILE_NAME = "metrics_report.html";
     private static final String VELOCITY_PROPERTIES_FILE = "velocity.properties";
-    private static final String REPORT_FILE_NAME = "metrics_report.html";
     private static final Charset UTF_8 = Charset.forName("UTF-8");
     private final File directory;
     private final Locale locale;
@@ -53,10 +52,11 @@ public class HtmlAggregateReporter extends ScheduledReporter {
         Writer writer = null;
 
         try {
-            Template template = Velocity.getTemplate(templateHtmlFile.getPath());
+            LOGGER.debug("templateHtmlFileName : {}", templateHtmlFile.getName());
+            Template template = Velocity.getTemplate(templateHtmlFile.getName());
 
             File reportFile = new File(directory, REPORT_FILE_NAME);
-            writer = new OutputStreamWriter(new FileOutputStream(reportFile), "UTF-8");
+            writer = new OutputStreamWriter(new FileOutputStream(reportFile), UTF_8);
 
             template.merge(context, writer);
         } catch (ResourceNotFoundException rnfe) {
@@ -66,12 +66,12 @@ public class HtmlAggregateReporter extends ScheduledReporter {
         } catch (IOException ioe) {
             LOGGER.warn("Can't write report File : {}\n{}", templateHtmlFile, ioe);
         } finally {
-            IOUtils.closeQuietly(writer);
+            try {
+                writer.close();
+            } catch (IOException e) {
+                LOGGER.warn("Writer has not been closed. : {}", e);
+            }
         }
-    }
-
-    protected String sanitize(String name) {
-        return name;
     }
 
     public static class Builder {

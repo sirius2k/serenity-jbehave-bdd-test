@@ -16,6 +16,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <assertj.version>3.6.2</assertj.version>
         <clover.version>4.2.1</clover.version>
+        <commons.io.version>2.6</commons.io.version>
         <io.socket.version>1.0.0</io.socket.version>
         <jackson.core.version>2.9.1</jackson.core.version>
         <jackson.databind.version>2.9.1</jackson.databind.version>
@@ -240,6 +241,13 @@
                 <groupId>org.openclover</groupId>
                 <artifactId>clover-maven-plugin</artifactId>
                 <version>${clover.version}</version>
+            </dependency>
+
+            <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons.io.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
