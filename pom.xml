@@ -14,6 +14,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
         <assertj.version>3.6.2</assertj.version>
         <clover.version>4.2.1</clover.version>
         <commons.io.version>2.6</commons.io.version>
@@ -306,6 +308,17 @@
                         <source>1.8</source>
                         <target>1.8</target>
                     </configuration>
+                </plugin>
+                <!--
+                    The below command instrument your sources, build your project, run your tests and create a Clover coverage report in the target/site/clover directory.
+                    $ mvn site
+                    or
+                    $ mvn clean clover:setup test clover:aggregate clover:clover
+                -->
+                <plugin>
+                    <groupId>org.openclover</groupId>
+                    <artifactId>clover-maven-plugin</artifactId>
+                    <version>${clover.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>

@@ -4,6 +4,7 @@ import kr.co.redbrush.bdd.test.domain.Post;
 import kr.co.redbrush.bdd.test.service.PostService;
 import kr.co.redbrush.bdd.test.ws.WebServiceResponse;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import net.thucydides.core.annotations.Step;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Data
+@EqualsAndHashCode(callSuper=false)
 @Slf4j
 public class PostSteps extends BaseSteps {
     @Autowired

@@ -28,6 +28,9 @@ public abstract class AbstractSocketIOClientFactory implements SocketIOClientFac
     @Value("${socket.io.transports:websocket}")
     protected String[] transports;
 
+    @Value("${socket.io.timeout:6000}")
+    protected long timeout;
+
     protected IO.Options options;
 
     @PostConstruct
@@ -38,6 +41,7 @@ public abstract class AbstractSocketIOClientFactory implements SocketIOClientFac
         options.reconnectionDelay = reconnectionDelay;
         options.reconnectionAttempts = reconnectionAttempts;
         options.transports = transports;
+        options.timeout = timeout;
     }
 
     @Override

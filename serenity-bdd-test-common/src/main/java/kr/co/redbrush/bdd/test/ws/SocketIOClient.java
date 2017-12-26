@@ -4,11 +4,14 @@ import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+
+import static org.slf4j.LoggerFactory.getLogger;
 
 @Slf4j
 public abstract class SocketIOClient {
     @Getter
-    private Socket socket;
+    protected Socket socket;
 
     public SocketIOClient(Socket socket) {
         this.socket = socket;
@@ -19,24 +22,40 @@ public abstract class SocketIOClient {
 
     private void bindDefaultEmitterListeners() {
         try {
-            this.socket.on(Socket.EVENT_CONNECT, objects -> {
-                LOGGER.debug("SocketIO connect");
+            onConnect(objects -> {
+                LOGGER.debug("SocketIO connected. : {}", objects);
             });
 
-            this.socket.on(Socket.EVENT_RECONNECTING, objects -> {
-                LOGGER.debug("SocketIO reconnecting : {}", objects);
-            });
-
-            this.socket.on(Socket.EVENT_DISCONNECT, objects -> {
+            onDisConnect(objects -> {
                 LOGGER.debug("SocketIO disconnect : {}", objects);
             });
 
-            this.socket.on(Socket.EVENT_RECONNECT_FAILED, objects -> {
+            onReconnecting(objects -> {
+                LOGGER.debug("SocketIO reconnecting : {}", objects);
+            });
+
+            onReconnectFailed(objects -> {
                 LOGGER.debug("SocketIO reconnect failed : This message is for PUSH error trap.");
             });
         } catch (Exception e) {
             LOGGER.error("Binding default emitter listeners failed!", e);
         }
+    }
+
+    protected void onConnect(Emitter.Listener listener) {
+        socket.on(Socket.EVENT_CONNECT, listener);
+    }
+
+    protected void onDisConnect(Emitter.Listener listener) {
+        socket.on(Socket.EVENT_DISCONNECT, listener);
+    }
+
+    protected void onReconnecting(Emitter.Listener listener) {
+        socket.on(Socket.EVENT_RECONNECTING, listener);
+    }
+
+    protected void onReconnectFailed(Emitter.Listener listener) {
+        socket.on(Socket.EVENT_RECONNECT_FAILED, listener);
     }
 
     public void connect() {
@@ -58,6 +77,14 @@ public abstract class SocketIOClient {
     public void close() {
         if (socket!=null && socket.connected()) {
             socket.close();
+        }
+    }
+
+    public void waitFor(long timeInMillis) {
+        try {
+            Thread.sleep(timeInMillis);
+        } catch (InterruptedException e) {
+            LOGGER.error("Thread interrupted.", e);
         }
     }
 }

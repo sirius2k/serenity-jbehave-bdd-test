@@ -30,3 +30,11 @@ Given title '${post.title}', body '${post.body}' and userId '${post.userId}'
 And User creates post
 When User request a post with id '1'
 Then server should return Post containing id '1', not empty title, not empty body and userId '1'
+
+Scenario: Get a post from websocket
+Meta:
+@scenario Get a post from websocket
+Given a post id '1'
+When User connected websocket
+And User request a post from websocket
+Then server should return Post containing id '1', not empty title, not empty body and userId '1'
