@@ -3,11 +3,14 @@ package kr.co.redbrush.bdd.test.ws;
 import com.xebialabs.restito.server.StubServer;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
+import io.socket.client.Socket;
 import kr.co.redbrush.bdd.test.ws.helper.Book;
+import kr.co.redbrush.bdd.test.ws.helper.SocketIOServerSupport;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.hamcrest.Matcher;
+import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -35,71 +38,61 @@ import static org.hamcrest.Matchers.notNullValue;
  * Test of RestAssuredResponse which used GPath : http://groovy-lang.org/processing-xml.html#_gpath
  */
 @Slf4j
-public class RestAssuredResponseTest {
+public class SocketIOResponseTest extends SocketIOServerSupport {
     @Rule
     public MockitoRule mockitoRule = MockitoJUnit.rule();
 
-    private StubServer server;
-    private String bookStoreJson;
-    private String bookJson;
-    private String contentType = "application/json";
-    private String storeUrl = "/store";
-    private String bookUrl = "/book";
+    private Socket socket;
+    private SocketIOClient socketIOClient;
 
     @Before
     public void before() throws Exception {
-        readBookStoreJsonExample();
-        readBookJsonExample();
+        socket = client();
+        socketIOClient = new SocketIOClient(socket) {
+            @Override
+            public void bindCustomEmitterListeners() {
+            }
+        };
+        socketIOClient.connect();
 
-        server = new StubServer().run();
-        RestAssured.port = server.getPort();
-
-        whenHttp(server)
-                .match(get(storeUrl))
-                .then(
-                        ok(),
-                        contentType(contentType),
-                        stringContent(bookStoreJson)
-                );
-
-        whenHttp(server)
-                .match(get(bookUrl))
-                .then(
-                        ok(),
-                        contentType(contentType),
-                        stringContent(bookJson)
-                );
-
-    }
-
-    private void readBookStoreJsonExample() throws IOException {
-        InputStream ios = this.getClass().getResourceAsStream("/bookstore.json");
-        bookStoreJson = IOUtils.toString(ios, "UTF-8");
-        IOUtils.closeQuietly(ios);
-    }
-
-    private void readBookJsonExample() throws IOException {
-        InputStream ios = this.getClass().getResourceAsStream("/book.json");
-        bookJson = IOUtils.toString(ios, "UTF-8");
-        IOUtils.closeQuietly(ios);
+        socketIOClient.emit("getBookStore");
     }
 
     @After
     public void after() throws Exception {
-        server.stop();
+        socketIOClient.disconnect();
     }
 
-    @Test
+    private JSONObject getBookStore() {
+        return socketIORequest("getBookStore");
+    }
+
+    private JSONObject getBook() {
+        return socketIORequest("getBook");
+    }
+
+    private JSONObject socketIORequest(String event) {
+        DefaultListener listener = new DefaultListener(socketIOClient);
+
+        socketIOClient.bindEvent(event, listener);
+        socketIOClient.emit(event);
+
+        JSONObject response = socketIOClient.waitJsonMessage();
+
+        return response;
+    }
+
+    @Test(timeout = TIMEOUT)
     public void testGetString() {
-        String path = "store.book[0].author";
+        String path = "$.store.book[0].author";
         String expectedValue = "Nigel Rees";
 
         testGetString(path, expectedValue);
     }
 
-    @Test
+    @Test(timeout = TIMEOUT)
     public void testGetStringWithInvalidPath() {
-        String path = "store.book[5].author";
+        String path = "$.store.book[5].author";
         String expectedValue = null;
 
         testGetString(path, expectedValue);
@@ -108,14 +101,14 @@ public class RestAssuredResponseTest {
     private void testGetString(String path, String expectedValue) {
         LOGGER.debug("path : {}, expectedValue value : {}", path, expectedValue);
 
-        Response response = expect().request().get(storeUrl);
-        RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
-        String actualValue = restAssuredResponse.getString(path);
+        JSONObject bookStoreJson = getBookStore();
+        SocketIOResponse response = new SocketIOResponse(bookStoreJson);
+        String actualValue = response.getString(path);
 
         assertThat("Value was not matched.", actualValue, is(expectedValue));
     }
 
-    @Test
+    @Test(timeout = TIMEOUT)
     public void testGetDefaultString() {
         String path = "store.book[0].author";
         String defaultValue = "Default Author";
@@ -124,7 +117,7 @@ public class RestAssuredResponseTest {
         testGetDefaultString(path, defaultValue, expectedValue);
     }
 
-    @Test
+    @Test(timeout = TIMEOUT)
     public void testGetDefaultStringWithInvalidPath() {
         String path = "store.book[5].author";
         String defaultValue = "Default Author";
@@ -133,30 +126,28 @@ public class RestAssuredResponseTest {
         testGetDefaultString(path, defaultValue, expectedValue);
     }
 
-
     private void testGetDefaultString(String path, String defaultValue, String expectedValue) {
         LOGGER.debug("path : {}, defaultValue : {}, expectedValue : {}", path, defaultValue, expectedValue);
 
-        Response response = expect().request().get(storeUrl);
-        RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
-
-        String actualValue = restAssuredResponse.getDefaultString(path, defaultValue);
+        JSONObject bookStoreJson = getBookStore();
+        SocketIOResponse response = new SocketIOResponse(bookStoreJson);
+        String actualValue = response.getDefaultString(path, defaultValue);
 
         assertThat("Value was empty.", actualValue, notNullValue());
         assertThat("Value was not matched.", actualValue, is(expectedValue));
     }
 
-    @Test
+    @Test(timeout = TIMEOUT)
     public void testGetInteger() {
-        String path = "expensive";
+        String path = "$.expensive";
         Integer expectedValue = 10;
 
         testGetInteger(path, expectedValue);
     }
 
-    @Test
+    @Test(timeout = TIMEOUT)
     public void testGetIntegerWithInvalidPath() {
-        String path = "expen";
+        String path = "$.expen";
         Integer expectedValue = null;
 
         testGetInteger(path, expectedValue);
@@ -165,14 +156,14 @@ public class RestAssuredResponseTest {
     private void testGetInteger(String path, Integer expectedValue) {
         LOGGER.debug("path : {}, expectedValue : {}", path, expectedValue);
 
-        Response response = expect().request().get(storeUrl);
-        RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
-        Integer actualValue = restAssuredResponse.getInteger(path);
+        JSONObject bookStoreJson = getBookStore();
+        SocketIOResponse response = new SocketIOResponse(bookStoreJson);
+        Integer actualValue = response.getInteger(path);
 
         assertThat("Value was not matched.", actualValue, is(expectedValue));
     }
 
-    @Test
+    @Test(timeout = TIMEOUT)
     public void testGetLong() {
         String path = "expensive";
         Long expectedValue = 10L;
@@ -180,7 +171,7 @@ public class RestAssuredResponseTest {
         testGetLong(path, expectedValue);
     }
 
-    @Test
+    @Test(timeout = TIMEOUT)
     public void testGetLongWithInvalidPath() {
         String path = "expen";
         Long expectedValue = null;
@@ -191,14 +182,14 @@ public class RestAssuredResponseTest {
     private void testGetLong(String path, Long expectedValue) {
         LOGGER.debug("path : {}, expectedValue : {}", path, expectedValue);
 
-        Response response = expect().request().get(storeUrl);
-        RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
-        Long actualValue = restAssuredResponse.getLong(path);
+        JSONObject bookStoreJson = getBookStore();
+        SocketIOResponse response = new SocketIOResponse(bookStoreJson);
+        Long actualValue = response.getLong(path);
 
         assertThat("Value was not matched.", actualValue, is(expectedValue));
     }
 
-    @Test
+    @Test(timeout = TIMEOUT)
     public void testGetFloat() {
         String path = "store.book[0].price";
         Float expectedValue = 8.95f;
@@ -206,7 +197,7 @@ public class RestAssuredResponseTest {
         testGetFloat(path, expectedValue);
     }
 
-    @Test
+    @Test(timeout = TIMEOUT)
     public void testGetFloatWithInvalidPath() {
         String path = "store.book[5].price";
         Float expectedValue = null;
@@ -217,14 +208,14 @@ public class RestAssuredResponseTest {
     private void testGetFloat(String path, Float expectedValue) {
         LOGGER.debug("path : {}, expectedValue : {}", path, expectedValue);
 
-        Response response = expect().request().get(storeUrl);
-        RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
-        Float actualValue = restAssuredResponse.getFloat(path);
+        JSONObject bookStoreJson = getBookStore();
+        SocketIOResponse response = new SocketIOResponse(bookStoreJson);
+        Float actualValue = response.getFloat(path);
 
         assertThat("Value was not matched.", actualValue, is(expectedValue));
     }
 
-    @Test
+    @Test(timeout = TIMEOUT)
     public void testGetDouble() {
         String path = "store.book[0].price";
         Double expectedValue = 8.95d;
@@ -232,7 +223,7 @@ public class RestAssuredResponseTest {
         testGetDouble(path, expectedValue);
     }
 
-    @Test
+    @Test(timeout = TIMEOUT)
     public void testGetDoubleWithInvalidPath() {
         String path = "store.book[5].price";
         Double expectedValue = null;
@@ -243,21 +234,21 @@ public class RestAssuredResponseTest {
     private void testGetDouble(String path, Double expectedValue) {
         LOGGER.debug("path : {}, expectedValue : {}", path, expectedValue);
 
-        Response response = expect().request().get(storeUrl);
-        RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
-        Double actualValue = restAssuredResponse.getDouble(path);
+        JSONObject bookStoreJson = getBookStore();
+        SocketIOResponse response = new SocketIOResponse(bookStoreJson);
+        Double actualValue = response.getDouble(path);
 
         assertThat("Value was not matched.", actualValue, is(expectedValue));
     }
 
-    @Test
+    @Test(timeout = TIMEOUT)
     public void testGetObject() {
-        String path = "store.book.author";
+        String path = "$.store.book[*].author";
         List<String> expectedAuthors = Arrays.asList("Nigel Rees", "Evelyn Waugh", "Herman Melville", "J. R. R. Tolkien");
 
-        Response response = expect().request().get(storeUrl);
-        RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
-        List<String> authors = restAssuredResponse.getObject(path);
+        JSONObject bookStoreJson = getBookStore();
+        SocketIOResponse response = new SocketIOResponse(bookStoreJson);
+        List<String> authors = response.getObject(path);
 
         LOGGER.debug("Extracted authors : {}", authors);
 
@@ -265,24 +256,24 @@ public class RestAssuredResponseTest {
         assertThat("Authors was not matched.", authors, containsInAnyOrder(expectedAuthors.toArray()));
     }
 
-    @Test
+    @Test(timeout = TIMEOUT)
     public void testGetObjectWithInvalidPath() {
-        String path = "store.book[5].author";
+        String path = "$.store.book[5].author";
 
-        Response response = expect().request().get(storeUrl);
-        RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
-        String value = restAssuredResponse.getObject(path);
+        JSONObject bookStoreJson = getBookStore();
+        SocketIOResponse response = new SocketIOResponse(bookStoreJson);
+        String value = response.getObject(path);
         String expectedValue = null;
 
         assertThat("Value was not matched.", value, is(expectedValue));
     }
 
-    @Test
+    @Test(timeout = TIMEOUT)
     public void testGetObjectWithSpecificType() {
-        Response response = expect().request().get(bookUrl);
-        RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
+        JSONObject bookJson = getBook();
+        SocketIOResponse response = new SocketIOResponse(bookJson);
         Book expectedBook = createBook();
-        Book book = restAssuredResponse.getObject(Book.class);
+        Book book = response.getObject(Book.class);
 
         LOGGER.debug("Extracted book : {}", book);
 
@@ -290,45 +281,19 @@ public class RestAssuredResponseTest {
         assertThat("Book was not matched.", EqualsBuilder.reflectionEquals(expectedBook, book), is(true));
     }
 
-    @Test
+    @Test(timeout = TIMEOUT)
     public void testGetObjectWithSpecificTypeAndInvalidClass() {
-        Response response = expect().request().get(storeUrl);
-        RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
-        Book book = restAssuredResponse.getObject(Book.class);
+        JSONObject bookStoreJson = getBookStore();
+        SocketIOResponse response = new SocketIOResponse(bookStoreJson);
+        Book book = response.getObject(Book.class);
 
         LOGGER.debug("Extracted book : {}", book);
 
-        assertThat("Book was empty.", book, nullValue());
-    }
-
-    @Test
-    public void testGetObjectWithPathAndSpecificType() {
-        String path = "store.book[0]";
-        Book expectedBook = createBook();
-
-        testGetObjectWithSpecificTypeAndPath(path, Book.class, expectedBook);
-    }
-
-    @Test
-    public void testGetObjectWithPathAndSpecificTypeAndInvalidPath() {
-        String path = "store.book[5]";
-        Book expectedValue = null;
-
-        testGetObjectWithSpecificTypeAndPath(path, Book.class, expectedValue);
-    }
-
-    private void testGetObjectWithSpecificTypeAndPath(String path, Class clazz, Object expectedValue) {
-        LOGGER.debug("Path : {}, Class : {}", path, clazz);
-
-        Response response = expect().request().get(storeUrl);
-        RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
-        Book book = restAssuredResponse.getObject(path, Book.class);
-
-        if (expectedValue == null) {
-            assertThat("Book was not matched.", book, is(expectedValue));
-        } else {
-            assertThat("Book was not matched.", EqualsBuilder.reflectionEquals(expectedValue, book), is(true));
-        }
+        assertThat("Book was empty.", book, notNullValue());
+        assertThat("Book was not matched.", book.getAuthor(), nullValue());
+        assertThat("Book was not matched.", book.getCategory(), nullValue());
+        assertThat("Book was not matched.", book.getPrice(), nullValue());
+        assertThat("Book was not matched.", book.getTitle(), nullValue());
     }
 
     private Book createBook() {
@@ -341,14 +306,44 @@ public class RestAssuredResponseTest {
         return book;
     }
 
-    @Test
+    @Test(timeout = TIMEOUT)
+    public void testGetObjectWithPathAndSpecificType() {
+        String path = "$.store.book[0]";
+        Book expectedBook = createBook();
+
+        testGetObjectWithSpecificTypeAndPath(path, Book.class, expectedBook);
+    }
+
+    @Test(timeout = TIMEOUT)
+    public void testGetObjectWithPathAndSpecificTypeAndInvalidPath() {
+        String path = "$.store.book[5]";
+        Book expectedValue = null;
+
+        testGetObjectWithSpecificTypeAndPath(path, Book.class, expectedValue);
+    }
+
+    private void testGetObjectWithSpecificTypeAndPath(String path, Class clazz, Object expectedValue) {
+        LOGGER.debug("Path : {}, Class : {}", path, clazz);
+
+        JSONObject bookStoreJson = getBookStore();
+        SocketIOResponse response = new SocketIOResponse(bookStoreJson);
+        Book book = response.getObject(path, Book.class);
+
+        if (expectedValue == null) {
+            assertThat("Book was not matched.", book, is(expectedValue));
+        } else {
+            assertThat("Book was not matched.", EqualsBuilder.reflectionEquals(expectedValue, book), is(true));
+        }
+    }
+
+    @Test(timeout = TIMEOUT)
     public void testGetObjectByJsonPath() {
         String path = "$.store.book[*].author";
         List<String> expectedAuthors = Arrays.asList("Nigel Rees", "Evelyn Waugh", "Herman Melville", "J. R. R. Tolkien");
 
-        Response response = expect().request().get(storeUrl);
-        RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
-        List<String> authors = restAssuredResponse.getObjectByJsonPath(path);
+        JSONObject bookStoreJson = getBookStore();
+        SocketIOResponse response = new SocketIOResponse(bookStoreJson);
+        List<String> authors = response.getObjectByJsonPath(path);
 
         LOGGER.debug("Extracted authors : {}", authors);
 
@@ -356,14 +351,14 @@ public class RestAssuredResponseTest {
         assertThat("Authors was not matched.", authors, containsInAnyOrder(expectedAuthors.toArray()));
     }
 
-    @Test
+    @Test(timeout = TIMEOUT)
     public void testGetObjectByJsonPathWithSpecificType() {
         String path = "$.store.book[0]";
         Book expectedBook = createBook();
 
-        Response response = expect().request().get(storeUrl);
-        RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
-        Book book = restAssuredResponse.getObjectByJsonPath(path, Book.class);
+        JSONObject bookStoreJson = getBookStore();
+        SocketIOResponse response = new SocketIOResponse(bookStoreJson);
+        Book book = response.getObjectByJsonPath(path, Book.class);
 
         LOGGER.debug("Extracted book : {}", book);
 
@@ -371,76 +366,76 @@ public class RestAssuredResponseTest {
         assertThat("Book was not matched.", EqualsBuilder.reflectionEquals(expectedBook, book), is(true));
     }
 
-    @Test
+    @Test(timeout = TIMEOUT)
     public void testIsEmpty() {
-        String path1 = "store.book[0].author";
-        String path2 = "store.book[5].author";
+        String path1 = "$.store.book[0].author";
+        String path2 = "$.store.book[5].author";
         String expectedAuthor = "Nigel Rees";
 
-        Response response = expect().request().get(storeUrl);
-        RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
+        JSONObject bookStoreJson = getBookStore();
+        SocketIOResponse response = new SocketIOResponse(bookStoreJson);
 
-        boolean empty1 = restAssuredResponse.isEmpty(path1);
-        boolean empty2 = restAssuredResponse.isEmpty(path2);
+        boolean empty1 = response.isEmpty(path1);
+        boolean empty2 = response.isEmpty(path2);
 
         assertThat("Author should not be empty.", empty1, is(false));
         assertThat("Author should be empty.", empty2, is(true));
     }
 
-    @Test
+    @Test(timeout = TIMEOUT)
     public void testIsEmptyThrowsException() {
-        String path1 = "store.book[0].author.test";
-        String path2 = "store.book[5].author.test";
+        String path1 = "$.store.book[0].author.test";
+        String path2 = "$.store.book[5].author.test";
         String expectedAuthor = "Nigel Rees";
 
-        Response response = expect().request().get(storeUrl);
-        RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
+        JSONObject bookStoreJson = getBookStore();
+        SocketIOResponse response = new SocketIOResponse(bookStoreJson);
 
-        boolean empty1 = restAssuredResponse.isEmpty(path1);
-        boolean empty2 = restAssuredResponse.isEmpty(path2);
+        boolean empty1 = response.isEmpty(path1);
+        boolean empty2 = response.isEmpty(path2);
 
         assertThat("Author should be empty.", empty1, is(true));
         assertThat("Author should be empty.", empty2, is(true));
     }
 
-    @Test
+    @Test(timeout = TIMEOUT)
     public void testGetStatusCode() {
-        int expectedStatusCode = 200;
-        Response response = expect().request().get(storeUrl);
-        RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
+        int expectedStatusCode = 0;
+        JSONObject bookStoreJson = getBookStore();
+        SocketIOResponse response = new SocketIOResponse(bookStoreJson);
 
-        int statusCode = restAssuredResponse.getStatusCode();
+        int statusCode = response.getStatusCode();
 
         assertThat("Status code was not matched.", statusCode, is(expectedStatusCode));
     }
 
-    @Test
+    @Test(timeout = TIMEOUT)
     public void testGetContentBody() {
-        Response response = expect().request().get(storeUrl);
-        RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
+        JSONObject bookStoreJson = getBookStore();
+        SocketIOResponse response = new SocketIOResponse(bookStoreJson);
 
-        String contentBody = restAssuredResponse.getContentBody();
+        String contentBody = response.getContentBody();
 
-        assertThat("ContentBody was not matched.", contentBody, is(bookStoreJson));
+        assertThat("ContentBody was not matched.", contentBody, is(bookStoreJson.toString()));
     }
 
-    @Test
+    @Test(timeout = TIMEOUT)
     public void testBodyMatches() {
-        Response response = expect().request().get(storeUrl);
-        RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
-        String var1 = "store.book[0]";
+        JSONObject bookStoreJson = getBookStore();
+        SocketIOResponse response = new SocketIOResponse(bookStoreJson);
+        String var1 = "$.store.book[0]";
         Matcher var2 = null;
         Object var3 = null;
 
-        restAssuredResponse.bodyMatches("store.book[0].author", equalTo("Nigel Rees"));
+        response.bodyMatches("$.store.book[0].author", equalTo("Nigel Rees"));
     }
 
-    @Test
+    @Test(timeout = TIMEOUT)
     public void testGetResponseTime() {
-        Response response = expect().request().get(storeUrl);
-        RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
+        JSONObject bookStoreJson = getBookStore();
+        SocketIOResponse response = new SocketIOResponse(bookStoreJson);
 
-        Long responseTime = restAssuredResponse.getResponseTime();
+        Long responseTime = response.getResponseTime();
 
         LOGGER.debug("Response time : {}", responseTime);
 

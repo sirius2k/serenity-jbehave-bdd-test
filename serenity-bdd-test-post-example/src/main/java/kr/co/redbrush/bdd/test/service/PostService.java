@@ -1,10 +1,16 @@
 package kr.co.redbrush.bdd.test.service;
 
+import kr.co.redbrush.bdd.test.common.SocketIOEvent;
 import kr.co.redbrush.bdd.test.common.TestURL;
 import kr.co.redbrush.bdd.test.domain.Post;
+import kr.co.redbrush.bdd.test.ws.SocketIOClient;
+import kr.co.redbrush.bdd.test.ws.SocketIOClientContainer;
 import kr.co.redbrush.bdd.test.ws.WebServiceRequest;
 import kr.co.redbrush.bdd.test.ws.WebServiceResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.jetty.websocket.client.WebSocketClient;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 /**
@@ -31,5 +37,15 @@ public class PostService extends BaseService {
                 .build();
 
         return restAssuredDriver.get(request);
+    }
+
+    public WebServiceResponse getPostFromWebSocket(SocketIOClientContainer container, Integer id) throws JSONException {
+        SocketIOClient client = container.getSocketIOClient();
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("id", id);
+
+        socketIODriver.sendMessage(SocketIOEvent.Post.GET_POST, jsonObject, client);
+
+        return socketIODriver.getJsonMessage(client);
     }
 }

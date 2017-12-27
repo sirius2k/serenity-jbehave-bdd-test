@@ -10,7 +10,7 @@ import java.net.URISyntaxException;
 
 @Slf4j
 public abstract class AbstractSocketIOClientFactory implements SocketIOClientFactory {
-    @Value("${socket.io.serverHost}")
+    @Value("${socket.io.server.host}")
     protected String serverHost;
 
     @Value("${socket.io.forceNew:true}")
@@ -42,6 +42,8 @@ public abstract class AbstractSocketIOClientFactory implements SocketIOClientFac
         options.reconnectionAttempts = reconnectionAttempts;
         options.transports = transports;
         options.timeout = timeout;
+
+        LOGGER.info("SocketIO server : {}", serverHost);
     }
 
     @Override
@@ -57,6 +59,8 @@ public abstract class AbstractSocketIOClientFactory implements SocketIOClientFac
     @Override
     public SocketIOClient createInstance(String serverHost, IO.Options options) throws URISyntaxException {
         Socket socket = IO.socket(serverHost, options);
+        socket.connect();
+
         SocketIOClient socketIOClient = createSocketIOClient(socket);
 
         return socketIOClient;

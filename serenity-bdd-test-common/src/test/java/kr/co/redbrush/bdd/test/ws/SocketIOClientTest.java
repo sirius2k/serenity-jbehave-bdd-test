@@ -1,95 +1,217 @@
 package kr.co.redbrush.bdd.test.ws;
 
+import io.socket.client.Ack;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
+import kr.co.redbrush.bdd.test.ws.helper.SocketIOServerSupport;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.time.StopWatch;
+import org.json.JSONObject;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
 
 /**
  * Created by kwpark on 18/04/2017.
  */
 @Slf4j
-public class SocketIOClientTest {
+public class SocketIOClientTest extends SocketIOServerSupport {
     @Rule
     public MockitoRule mockitoRule = MockitoJUnit.rule();
 
-    @Mock
-    public Socket socket;
-
+    private Socket socket;
     private SocketIOClient socketIOClient;
-    private Emitter.Listener listener;
-    private String testEvent = "test";
 
     @Before
     public void before() throws Exception {
-        listener = new Emitter.Listener() {
-            @Override
-            public void call(Object... args) {
-                LOGGER.debug("call");
-            }
-        };
-
+        socket = client();
         socketIOClient = new SocketIOClient(socket) {
             @Override
             public void bindCustomEmitterListeners() {
-                socket.on(testEvent, listener);
+
             }
         };
     }
 
-    @Test
-    public void testCreateInstance() throws Exception {
-        assertThat("Socket is not valid.", socketIOClient.getSocket(), is(socket));
-        verify(socket).on(eq(Socket.EVENT_CONNECT), any(Emitter.Listener.class));
-        verify(socket).on(eq(Socket.EVENT_RECONNECTING), any(Emitter.Listener.class));
-        verify(socket).on(eq(Socket.EVENT_DISCONNECT), any(Emitter.Listener.class));
-        verify(socket).on(eq(Socket.EVENT_RECONNECT_FAILED), any(Emitter.Listener.class));
-        verify(socket).on(eq(testEvent), eq(listener));
+    @After
+    public void after() throws Exception {
+        socketIOClient.disconnect();
     }
 
-    @Test
-    public void testConnect() throws Exception {
-        when(socket.connected()).thenReturn(false, true);
+    @Test(timeout = TIMEOUT)
+    public void testConnectionToLocalhost() throws Exception {
+        final BlockingQueue<Object> values = new LinkedBlockingQueue<Object>();
+        String message = "echo";
+
+        socket = client();
+
+        socket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                socket.emit("echo", message);
+                socket.on("echoBack", new Emitter.Listener() {
+                    @Override
+                    public void call(Object... args) {
+                        values.offer(args[0].toString());
+                    }
+                });
+            }
+        });
+
+        socket.connect();
+
+        assertThat("Unexpected response.", values.take(), is(message));
+
+        socket.close();
+    }
+
+    @Test(timeout = TIMEOUT)
+    public void testConnectAndDisconnect() throws Exception {
+        Socket expectedSocket = socketIOClient.getSocket();
+
+        assertThat("Socket is not valid.", expectedSocket, is(socket));
 
         socketIOClient.connect();
+
+        assertThat("Socket is not connected.", socketIOClient.connected(), is(true));
+
+        socketIOClient.disconnect();
+
+        assertThat("Socket is connected.", socketIOClient.connected(), is(false));
+    }
+
+    @Test(timeout = TIMEOUT)
+    public void testConnectWhenAlreadyConnected() throws Exception {
+        StopWatch stopWatch = new StopWatch();
+        Socket expectedSocket = socketIOClient.getSocket();
+
+        assertThat("Socket is not valid.", expectedSocket, is(socket));
+
+        stopWatch.start();
         socketIOClient.connect();
-        verify(socket, times(1)).connect();
+        assertThat("Socket is not connected.", socketIOClient.connected(), is(true));
+        assertThat("Unexpected connection time", stopWatch.getTime(), greaterThanOrEqualTo(SocketIOClient.SOCKETIO_CHECK_INTERVAL));
+        stopWatch.stop();
+
+        stopWatch.reset();
+
+        stopWatch.start();
+        assertThat("Socket is not connected.", socketIOClient.connected(), is(true));
+        socketIOClient.connect();
+        assertThat("Unexpected connection time", stopWatch.getTime(), lessThan(SocketIOClient.SOCKETIO_CHECK_INTERVAL));
+        stopWatch.stop();
+
+        socketIOClient.disconnect();
+
+        assertThat("Socket is connected.", socketIOClient.connected(), is(false));
     }
 
-    @Test
-    public void testAddEmitterListener() throws Exception {
-        String event = "event";
+    @Test(timeout = TIMEOUT)
+    public void testBindEventAndEmit() throws Exception {
+        String echoBackEvent = "echoBack";
+        String echoMessage = "Echo message";
+        DefaultListener listener = new DefaultListener(socketIOClient);
 
-        socketIOClient.bindEmitterListener(event, listener);
+        socketIOClient.bindEvent(echoBackEvent, listener);
 
-        verify(socket).on(event, listener);
+        socketIOClient.connect();
+        socketIOClient.emit("echo", echoMessage);
+        socketIOClient.waitMessage();
+        socketIOClient.disconnect();
+
+        assertThat("Unexpected result.", socketIOClient.getMessages().take(), is(echoMessage));
     }
 
-    @Test
-    public void testConnected() throws Exception {
-        when(socket.connected()).thenReturn(false, true);
+    @Test(timeout = TIMEOUT)
+    public void testBindEventAndWaitTestMessage() throws Exception {
+        String echoBackEvent = "echoBack";
+        String echoMessage = "Echo message";
+        String actualMessage = null;
+        DefaultListener listener = new DefaultListener(socketIOClient);
 
-        assertThat("Socket was connected.", socketIOClient.connected(), is(false));
-        assertThat("Socket was not connected.", socketIOClient.connected(), is(true));
+        socketIOClient.bindEvent(echoBackEvent, listener);
+
+        socketIOClient.connect();
+        socketIOClient.emit("echo", echoMessage);
+        actualMessage = socketIOClient.waitTextMessage();
+        socketIOClient.disconnect();
+
+        assertThat("Unexpected result.", actualMessage, is(echoMessage));
     }
 
-    @Test
-    public void testClose() throws Exception {
-        when(socket.connected()).thenReturn(true, false);
+    @Test(timeout = TIMEOUT)
+    public void testEmit() throws Exception {
+        String getBookStoreEvent = "getBookStore";
+        JSONObject actualResponse = null;
+        DefaultListener listener = new DefaultListener(socketIOClient);
 
-        socketIOClient.close();
-        socketIOClient.close();
-        verify(socket, times(1)).close();
+        socketIOClient.bindEvent(getBookStoreEvent, listener);
+
+        socketIOClient.connect();
+        socketIOClient.emit("getBookStore");
+        actualResponse = socketIOClient.waitJsonMessage();
+        socketIOClient.disconnect();
+
+        LOGGER.debug("Actual Response : {}, length : {}", actualResponse, actualResponse.length());
+
+        assertThat("Unexpected result.", actualResponse, notNullValue());
+        assertThat("Unexpected result.", actualResponse.length(), is(2));
+    }
+
+    @Test(timeout = TIMEOUT)
+    public void testEmitJson() throws Exception {
+        DefaultListener listener = new DefaultListener(socketIOClient);
+
+        JSONObject json = new JSONObject();
+        json.put("id", 1);
+
+        JSONObject actualResponse = null;
+
+        socketIOClient.bindEvent("getPost", listener);
+
+        socketIOClient.connect();
+        socketIOClient.emit("getPost", json);
+        actualResponse = socketIOClient.waitJsonMessage();
+        socketIOClient.disconnect();
+
+        assertThat("Unexpected result.", actualResponse.get("id"), is(1));
+        assertThat("Unexpected result.", actualResponse.get("title"), is("title"));
+        assertThat("Unexpected result.", actualResponse.get("body"), is("test body"));
+        assertThat("Unexpected result.", actualResponse.get("userId"), is(1));
+    }
+
+    @Test(timeout = TIMEOUT)
+    public void testEmitJsonAndProcessAck() throws Exception {
+        DefaultListener listener = new DefaultListener(socketIOClient);
+        boolean ackCalled = false;
+
+        JSONObject json = new JSONObject();
+        json.put("id", 1);
+
+        JSONObject actualResponse = null;
+
+        socketIOClient.bindEvent("getPost", listener);
+
+        socketIOClient.connect();
+        socketIOClient.emit("getPost", json);
+        actualResponse = socketIOClient.waitJsonMessage();
+        socketIOClient.disconnect();
+
+        assertThat("Unexpected result.", actualResponse.get("id"), is(1));
+        assertThat("Unexpected result.", actualResponse.get("title"), is("title"));
+        assertThat("Unexpected result.", actualResponse.get("body"), is("test body"));
+        assertThat("Unexpected result.", actualResponse.get("userId"), is(1));
     }
 }
