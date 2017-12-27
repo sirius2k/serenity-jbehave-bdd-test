@@ -29,11 +29,19 @@ public class PostWebServiceRequestBuilderFactory extends SpringWebServiceRequest
 
     @Override
     public WebServiceRequest.WebServiceRequestBuilder createInstance(Map<String, Object> parameters) {
-        return createInstance();
+        WebServiceRequest.WebServiceRequestBuilder builder = createInstance();
+
+        // TODO : Do additional configuration with map
+
+        return builder;
     }
 
     @Override
     public WebServiceRequest.WebServiceRequestBuilder createAuthorizedInstance(String username) {
-        return createInstance();
+        WebServiceRequest.WebServiceRequestBuilder builder = createInstance();
+
+        // TODO : Do additional configuration with username
+
+        return builder;
     }
 }

@@ -4,13 +4,13 @@
     <parent>
         <groupId>kr.co.redbrush.bdd.test</groupId>
         <artifactId>serenity-bdd-test-parent</artifactId>
-        <version>1.0.8</version>
+        <version>1.0.9</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>kr.co.redbrush.bdd.test</groupId>
     <artifactId>serenity-bdd-test-post-example</artifactId>
-    <version>1.0.8</version>
+    <version>1.0.9</version>
     <packaging>jar</packaging>
 
     <name>serenity-bdd-test-post-example</name>
@@ -203,11 +203,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.2</version>
-                <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>net.serenity-bdd.maven.plugins</groupId>

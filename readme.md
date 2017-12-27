@@ -1,5 +1,5 @@
 ## Synopsis
-This project is base project for BDD Test which is created on top of Serenity, Spring Framework and JBehave. 
+This project is base project for BDD Test which is created on top of Serenity, Spring Framework and JBehave. The objective of this project is to create REST API and WebSocket integration test quickly.
 
 ## Code Example
 Story which describes acceptance criteria
@@ -94,6 +94,14 @@ public class PostSocketIOClient extends SocketIOClient {
     @Override
     public void bindCustomEmitterListeners() {
         LOGGER.debug("bind custom emitter listeners");
+        
+        this.socket.on("Custom Action", objects -> {
+            LOGGER.debug("SocketIO Custom Action");
+        });
+
+        this.socket.on(Socket.EVENT_RECONNECTING, objects -> {
+            LOGGER.debug("SocketIO Custom Action2 : {}", objects);
+        });
     }
 }
 ```

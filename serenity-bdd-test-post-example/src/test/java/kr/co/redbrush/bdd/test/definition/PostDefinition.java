@@ -1,12 +1,11 @@
 package kr.co.redbrush.bdd.test.definition;
 
-import io.restassured.RestAssured;
-import io.restassured.parsing.Parser;
 import kr.co.redbrush.bdd.test.domain.Post;
 import kr.co.redbrush.bdd.test.steps.PostSteps;
 import kr.co.redbrush.bdd.test.ws.WebServiceResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.jbehave.core.annotations.*;
+import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
@@ -28,17 +27,6 @@ public class PostDefinition extends BaseTestDefinition {
     public void init() {
     }
 
-    @BeforeScenario
-    public void before() {
-    }
-
-    @AfterScenario
-    public void after() {
-        testContextService.clearContext();
-
-        LOGGER.info("After scenario called. TestContext is cleared.");
-    }
-
     @Given("title '$title', body '$body' and userId '$userId'")
     public void givenTitleBodyUserId(String title, String body, Integer userId) {
         Post post = Post.builder()
@@ -52,9 +40,9 @@ public class PostDefinition extends BaseTestDefinition {
         testContextService.getTestContext().put("post", post);
     }
 
-    @Given("User creates post")
-    @When("User creates post")
-    public void whenUserCreatePostWith() {
+    @Given("$userWithIndex creates post")
+    @When("$userWithIndex creates post")
+    public void whenUserCreatePostWith(String userWithIndex) {
         Post post = testContextService.getTestContext().get("post");
 
         postSteps.createPost(post.getTitle(), post.getBody(), post.getUserId());
@@ -78,15 +66,15 @@ public class PostDefinition extends BaseTestDefinition {
         testContextService.getTestContext().put("postId", id);
     }
 
-    @When("User request a post")
-    public void whenUserReuqestAPost() {
+    @When("$userWithIndex request a post")
+    public void whenUserReuqestAPost(String userWithIndex) {
         Integer id = testContextService.getTestContext().get("postId");
 
         postSteps.getPost(id);
     }
 
-    @When("User request a post with id '$id'")
-    public void whenUserReuqestAPostWith(Integer id) {
+    @When("$userWithIndex request a post with id '$id'")
+    public void whenUserReuqestAPostWith(String userWithIndex, Integer id) {
         postSteps.getPost(id);
     }
 
@@ -102,13 +90,16 @@ public class PostDefinition extends BaseTestDefinition {
         assertThat(post.getTitle(), not(isEmptyString()));
         assertThat(post.getBody(), not(isEmptyString()));
         assertThat(post.getUserId(), equalTo(userId));
-
-
     }
 
-    @When("User create post with with title '$title', body '$body' and userId '$userId' and request a post with id '$id'")
-    public void whenUserCreatePostAndRequestAPostWith(String title, String body, Integer userId, Integer id) {
+    @When("$userWithIndex create post with with title '$title', body '$body' and userId '$userId' and request a post with id '$id'")
+    public void whenUserCreatePostAndRequestAPostWith(String userWithIndex, String title, String body, Integer userId, Integer id) {
         postSteps.createPost(title, body, userId);
         postSteps.getPost(id);
+    }
+
+    @When("$userWithIndex request a post with id '$id' from websocket")
+    public void whenUserReuqestAPostFromWebsocketWith(String userWithIndex, Integer id) throws JSONException {
+        postSteps.getPostFromWebSocket(userWithIndex, id);
     }
 }

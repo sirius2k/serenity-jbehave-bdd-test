@@ -1,8 +1,8 @@
 package kr.co.redbrush.bdd.test.ws;
 
+import com.xebialabs.restito.server.StubServer;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
-import com.xebialabs.restito.server.StubServer;
 import kr.co.redbrush.bdd.test.ws.helper.Book;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -20,10 +20,10 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
-import static io.restassured.RestAssured.expect;
 import static com.xebialabs.restito.builder.stub.StubHttp.whenHttp;
 import static com.xebialabs.restito.semantics.Action.*;
 import static com.xebialabs.restito.semantics.Condition.get;
+import static io.restassured.RestAssured.expect;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -168,6 +168,32 @@ public class RestAssuredResponseTest {
         Response response = expect().request().get(storeUrl);
         RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
         Integer actualValue = restAssuredResponse.getInteger(path);
+
+        assertThat("Value was not matched.", actualValue, is(expectedValue));
+    }
+
+    @Test
+    public void testGetLong() {
+        String path = "expensive";
+        Long expectedValue = 10L;
+
+        testGetLong(path, expectedValue);
+    }
+
+    @Test
+    public void testGetLongWithInvalidPath() {
+        String path = "expen";
+        Long expectedValue = null;
+
+        testGetLong(path, expectedValue);
+    }
+
+    private void testGetLong(String path, Long expectedValue) {
+        LOGGER.debug("path : {}, expectedValue : {}", path, expectedValue);
+
+        Response response = expect().request().get(storeUrl);
+        RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
+        Long actualValue = restAssuredResponse.getLong(path);
 
         assertThat("Value was not matched.", actualValue, is(expectedValue));
     }
@@ -362,6 +388,22 @@ public class RestAssuredResponseTest {
     }
 
     @Test
+    public void testIsEmptyThrowsException() {
+        String path1 = "store.book[0].author.test";
+        String path2 = "store.book[5].author.test";
+        String expectedAuthor = "Nigel Rees";
+
+        Response response = expect().request().get(storeUrl);
+        RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
+
+        boolean empty1 = restAssuredResponse.isEmpty(path1);
+        boolean empty2 = restAssuredResponse.isEmpty(path2);
+
+        assertThat("Author should be empty.", empty1, is(true));
+        assertThat("Author should be empty.", empty2, is(true));
+    }
+
+    @Test
     public void testGetStatusCode() {
         int expectedStatusCode = 200;
         Response response = expect().request().get(storeUrl);
@@ -391,5 +433,17 @@ public class RestAssuredResponseTest {
         Object var3 = null;
 
         restAssuredResponse.bodyMatches("store.book[0].author", equalTo("Nigel Rees"));
+    }
+
+    @Test
+    public void testGetResponseTime() {
+        Response response = expect().request().get(storeUrl);
+        RestAssuredResponse restAssuredResponse = new RestAssuredResponse(response);
+
+        Long responseTime = restAssuredResponse.getResponseTime();
+
+        LOGGER.debug("Response time : {}", responseTime);
+
+        assertThat("Unexpected response time.", responseTime, notNullValue());
     }
 }
