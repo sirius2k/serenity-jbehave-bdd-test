@@ -260,13 +260,13 @@
                 <!--
                     command todo release start and finish at once
 
-                    mvn jgitflow:release-start jgitflow:release-finish -Dmaven.test.skip=true
+                    mvn jgitflow:release-start jgitflow:release-finish -Dmaven.test.skip=true -P local,linux
 
                     command todo release start and finish in steps
 
-                    mvn jgitflow:release-start -Dmaven.test.skip=true
+                    mvn jgitflow:release-start -Dmaven.test.skip=true -P local,linux
                     #do some other action
-                    mvn jgitflow:release-finish -Dmaven.test.skip=true
+                    mvn jgitflow:release-finish -Dmaven.test.skip=true -P local,linux
                 -->
                 <plugin>
                     <groupId>external.atlassian.jgitflow</groupId>
