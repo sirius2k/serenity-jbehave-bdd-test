@@ -3,7 +3,7 @@ This project is base project for BDD Test which is created on top of Serenity, S
 
 ## Code Example
 Story which describes acceptance criteria
-```
+```text
 When User create post with title '${post.title}', body '${post.body}' and userId '${post.userId}'
 Then Created Post contains id '101', title '${post.title}', body '${post.body}' and userId '${post.userId}'
 
@@ -23,7 +23,7 @@ public void whenUserCreatePostWith(String title, String body, Integer userId) {
 4. Acceptance criteria is a test cases described as test scenario.
 
 You can describe narrative of each requirement from file narrative.txt in feature folder /test/resources/stories/[feature]/
-```
+```text
 [Requirement]
 Narrative of requirement
 
@@ -34,7 +34,7 @@ As a User
 I want to view, create, update and delete a post
 ```
 And, you can also describe the narrative of each story in the story file as follows.
-```
+```text
 Narrative:
 Narrative of story
 
@@ -49,8 +49,8 @@ I want to view, create, update and delete a post
 Prior to write tests, you will need to implement your own Factory classes and SocketIOClient.
 
 *PostWebServiceRequestBuilderFactory.java*
-```
-Component
+```java
+@Component
 @Slf4j
 public class PostWebServiceRequestBuilderFactory extends SpringWebServiceRequestBuilderFactory {
 
@@ -83,24 +83,21 @@ This class is to create WebServiceRequestBuilder instance which contains informa
 You can add your own initialization code for WebServiceRequestBuilder here.
 
 *PostSocketIOClient.java*
-```
+```java
 @Slf4j
 public class PostSocketIOClient extends SocketIOClient {
-
     public PostSocketIOClient(Socket socket) {
         super(socket);
     }
 
     @Override
     public void bindCustomEmitterListeners() {
-        LOGGER.debug("bind custom emitter listeners");
-        
-        this.socket.on("Custom Action", objects -> {
-            LOGGER.debug("SocketIO Custom Action");
-        });
+        socket.on(GET_POST, objects -> {
+            JSONObject json = (JSONObject)objects[0];
 
-        this.socket.on(Socket.EVENT_RECONNECTING, objects -> {
-            LOGGER.debug("SocketIO Custom Action2 : {}", objects);
+            addMessage(json);
+
+            LOGGER.debug("getPost : {}", json);
         });
     }
 }
@@ -108,7 +105,7 @@ public class PostSocketIOClient extends SocketIOClient {
 In the SocketIOClient, you should bind your own EmitterListers to process messages from socket-io server. 
 
 *PostSocketIOClientFactory.java*
-```
+```java
 @Component
 public class PostSocketIOClientFactory extends AbstractSocketIOClientFactory {
 
@@ -122,11 +119,51 @@ You can also create and instantiate your own SocketIOClient from the SocketIOCli
 
 ## Installation
 
-TDB
+In order to run demo test, you have to install npm and Node.js. Please, refer to https://www.npmjs.com/get-npm.
+For socket-io server, you need to install npm and node first. Then install socket.io in global.
+
+```sh
+$ npm install -g socket.io
+```
+
+And, link socket.io in the src/test/java/resources/server. in both serenity-bdd-test-post-example and serenity-bdd-test-common project.
+
+```sh
+$ cd src/test/java/resources/server
+$ npm link socket.io
+```
+
+For background running of the server you need to install forever.
+
+```sh
+$ npm install -g forever
+```
 
 ## API Reference
 
-TDB
+serenity-bdd-test-common project provide nodejs server which provides SocketIO protocol for test. You can see server source at [server.js](https://github.com/sirius2k/serenity-jbehave-bdd-test/blob/master/serenity-bdd-test-common/src/test/resources/server/server.js). It serves the following SocketIO events.
+
+- echo : echo will return the same message sent from client with 'echoBack' event.
+- getPost : return post object with 'getPost' event
+```json
+    {
+        id : 'id',
+        title : 'title',
+        body : 'test body',
+        userId : 1
+    }
+```
+- getBookStore : return bookstore object ([bookstore.json](https://github.com/sirius2k/serenity-jbehave-bdd-test/blob/master/serenity-bdd-test-common/src/test/resources/server/bookstore.json)) with 'getBookStore' event.
+- getBook :  : return bookstore object (([book.json](https://github.com/sirius2k/serenity-jbehave-bdd-test/blob/master/serenity-bdd-test-common/src/test/resources/server/book.json))) with 'getBook' event.
+
+
+serenity-bdd-test-post-example project also provide nodejs server which provides REST API and WebSocket protocol for test. You can see server source at [app.js](https://github.com/sirius2k/serenity-jbehave-bdd-test-post-example/blob/master/serenity-bdd-test-post-example/src/test/resources/server/app.js). It serves the following REST API and SocketIO events.
+- GET / : just return hello text
+- GET /posts : return posts object ([posts.json](https://github.com/sirius2k/serenity-jbehave-bdd-test/blob/master/serenity-bdd-test-post-example/src/test/resources/server/posts.json))
+- GET /posts/:id : return post object ([post.json](https://github.com/sirius2k/serenity-jbehave-bdd-test/blob/master/serenity-bdd-test-post-example/src/test/resources/server/post.json)) with id
+- POST /posts : return post object ([post.json](https://github.com/sirius2k/serenity-jbehave-bdd-test/blob/master/serenity-bdd-test-post-example/src/test/resources/server/post.json)) with id 101
+- getPost : return post object ([post.json](https://github.com/sirius2k/serenity-jbehave-bdd-test/blob/master/serenity-bdd-test-post-example/src/test/resources/server/post.json)) with 'getPost' event
+- getPosts : return post object ([posts.json](https://github.com/sirius2k/serenity-jbehave-bdd-test/blob/master/serenity-bdd-test-post-example/src/test/resources/server/posts.json)) with 'getPosts' event
 
 ## Tests
 Run all test cases with specific profile
@@ -146,8 +183,4 @@ Park, KyoungWook (Kevin) / sirius00@paran.com
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
-
-## Acknowledgments
-
-* TBD
+This project is licensed under the MIT License

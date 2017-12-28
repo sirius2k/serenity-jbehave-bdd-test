@@ -4,13 +4,13 @@
     <parent>
         <groupId>kr.co.redbrush.bdd.test</groupId>
         <artifactId>serenity-bdd-test-parent</artifactId>
-        <version>1.0.9</version>
+        <version>1.0.10</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>kr.co.redbrush.bdd.test</groupId>
     <artifactId>serenity-bdd-test-post-example</artifactId>
-    <version>1.0.9</version>
+    <version>1.0.10</version>
     <packaging>jar</packaging>
 
     <name>serenity-bdd-test-post-example</name>
@@ -37,6 +37,24 @@
             <properties>
                 <spring.profiles.active>dev</spring.profiles.active>
                 <environment>dev</environment>
+            </properties>
+        </profile>
+        <profile>
+            <id>linux</id>
+            <properties>
+                <run.command>sh</run.command>
+                <run.command.additional.arg />
+                <server.startup.script>startup.sh</server.startup.script>
+                <server.shutdown.script>shutdown.sh</server.shutdown.script>
+            </properties>
+        </profile>
+        <profile>
+            <id>window</id>
+            <properties>
+                <run.command>cmd</run.command>
+                <run.command.additional.arg>/c</run.command.additional.arg>
+                <server.startup.script>startup.bat</server.startup.script>
+                <server.shutdown.script>shutdown.bat</server.shutdown.script>
             </properties>
         </profile>
     </profiles>
@@ -249,6 +267,70 @@
                     <nexusUrl>http://localhost:8081/nexus/</nexusUrl>
                     <skipStaging>true</skipStaging>
                 </configuration>
+            </plugin>
+            <!--
+                In order to run socket-io server, you need to install npm and node first.
+                Then install socket.io in global.
+
+                $ npm install -g socket.io
+
+                And, link socket.io in the src/test/java/resources/server.
+
+                $ cd src/test/java/resources/server
+                $ npm link socket.io
+
+                For background running of the server you need to install forever.
+
+                $ npm install -g forever
+            -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.6.0</version>
+                <executions>
+                    <execution>
+                        <id>npm-install</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>npm</executable>
+                            <workingDirectory>src/test/resources/server</workingDirectory>
+                            <arguments>
+                                <argument>install</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>start-socket-io-server</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>${run.command}</executable>
+                            <workingDirectory>src/test/resources/server</workingDirectory>
+                            <arguments>
+                                <argument>${server.startup.script}</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>stop-socket-io-server</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>${run.command}</executable>
+                            <workingDirectory>src/test/resources/server</workingDirectory>
+                            <arguments>
+                                <argument>${server.shutdown.script}</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

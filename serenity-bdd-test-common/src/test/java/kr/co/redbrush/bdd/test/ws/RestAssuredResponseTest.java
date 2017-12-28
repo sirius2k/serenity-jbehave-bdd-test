@@ -73,13 +73,13 @@ public class RestAssuredResponseTest {
     }
 
     private void readBookStoreJsonExample() throws IOException {
-        InputStream ios = this.getClass().getResourceAsStream("/bookstore.json");
+        InputStream ios = this.getClass().getResourceAsStream("/server/bookstore.json");
         bookStoreJson = IOUtils.toString(ios, "UTF-8");
         IOUtils.closeQuietly(ios);
     }
 
     private void readBookJsonExample() throws IOException {
-        InputStream ios = this.getClass().getResourceAsStream("/book.json");
+        InputStream ios = this.getClass().getResourceAsStream("/server/book.json");
         bookJson = IOUtils.toString(ios, "UTF-8");
         IOUtils.closeQuietly(ios);
     }
