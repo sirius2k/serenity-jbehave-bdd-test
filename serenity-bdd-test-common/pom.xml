@@ -24,7 +24,7 @@
             <id>linux</id>
             <properties>
                 <run.command>sh</run.command>
-                <run.command.additional.arg></run.command.additional.arg>
+                <run.command.additional.arg />
                 <server.startup.script>startup.sh</server.startup.script>
                 <server.shutdown.script>shutdown.sh</server.shutdown.script>
             </properties>
