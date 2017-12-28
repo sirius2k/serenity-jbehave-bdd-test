@@ -4,13 +4,13 @@
     <parent>
         <groupId>kr.co.redbrush.bdd.test</groupId>
         <artifactId>serenity-bdd-test-parent</artifactId>
-        <version>1.0.10-SNAPSHOT</version>
+        <version>1.0.11-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>kr.co.redbrush.bdd.test</groupId>
     <artifactId>serenity-bdd-test-post-example</artifactId>
-    <version>1.0.10-SNAPSHOT</version>
+    <version>1.0.11-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>serenity-bdd-test-post-example</name>
@@ -43,7 +43,7 @@
             <id>linux</id>
             <properties>
                 <run.command>sh</run.command>
-                <run.command.additional.arg></run.command.additional.arg>
+                <run.command.additional.arg />
                 <server.startup.script>startup.sh</server.startup.script>
                 <server.shutdown.script>shutdown.sh</server.shutdown.script>
             </properties>
