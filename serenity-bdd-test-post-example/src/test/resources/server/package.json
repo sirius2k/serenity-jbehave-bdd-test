@@ -1,0 +1,9 @@
+{
+  "name": "simple-socket-io-server",
+  "version": "0.0.1",
+  "description": "Simple socket io server",
+  "dependencies": {
+    "express": "^4.15.2",
+    "socket.io": "^2.0.4"
+  }
+}
