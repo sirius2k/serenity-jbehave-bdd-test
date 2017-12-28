@@ -23,7 +23,7 @@ public class AbstractSocketIOClientFactoryTest {
     public MockitoRule mockitoRule = MockitoJUnit.rule();
 
     private AbstractSocketIOClientFactory factory;
-    private String serverHost = "http://localhost";
+    private String serverHost = "http://localhost:3001";
 
     @Before
     public void before() throws Exception {
@@ -39,7 +39,7 @@ public class AbstractSocketIOClientFactoryTest {
             }
         };
 
-        ReflectionTestUtils.setField(factory, "serverHost", "http://www.github.com");
+        ReflectionTestUtils.setField(factory, "serverHost", serverHost);
         ReflectionTestUtils.setField(factory, "forceNew", true);
         ReflectionTestUtils.setField(factory, "reconnection", true);
         ReflectionTestUtils.setField(factory, "reconnectionDelay", 2000);
