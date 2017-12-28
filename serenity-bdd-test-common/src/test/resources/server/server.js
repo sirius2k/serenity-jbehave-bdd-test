@@ -14,7 +14,7 @@ var io = require('socket.io')(server, {
     pingInterval: 2000,
     wsEngine: 'ws'
 });
-var port = process.env.PORT || 3000;
+var port = process.env.PORT || 3001;
 var nsp = process.argv[2] || '/';
 var slice = Array.prototype.slice;
 

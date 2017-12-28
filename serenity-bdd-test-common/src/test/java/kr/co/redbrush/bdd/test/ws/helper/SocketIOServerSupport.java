@@ -17,7 +17,7 @@ import java.util.concurrent.*;
 @Slf4j
 public abstract class SocketIOServerSupport {
     protected final static int TIMEOUT = 7000;
-    protected final static int PORT = 3000;
+    protected final static int PORT = 3001;
 
     private Process serverProcess;
     private ExecutorService serverService;
