@@ -1,6 +1,5 @@
 package kr.co.redbrush.bdd.test.ws;
 
-import io.socket.client.Ack;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 import kr.co.redbrush.bdd.test.ws.helper.SocketIOServerSupport;
@@ -122,7 +121,7 @@ public class SocketIOClientTest extends SocketIOServerSupport {
     public void testBindEventAndEmit() throws Exception {
         String echoBackEvent = "echoBack";
         String echoMessage = "Echo message";
-        DefaultListener listener = new DefaultListener(socketIOClient);
+        DefaultEmitterListener listener = new DefaultEmitterListener(socketIOClient);
 
         socketIOClient.bindEvent(echoBackEvent, listener);
 
@@ -139,7 +138,7 @@ public class SocketIOClientTest extends SocketIOServerSupport {
         String echoBackEvent = "echoBack";
         String echoMessage = "Echo message";
         String actualMessage = null;
-        DefaultListener listener = new DefaultListener(socketIOClient);
+        DefaultEmitterListener listener = new DefaultEmitterListener(socketIOClient);
 
         socketIOClient.bindEvent(echoBackEvent, listener);
 
@@ -155,7 +154,7 @@ public class SocketIOClientTest extends SocketIOServerSupport {
     public void testEmit() throws Exception {
         String getBookStoreEvent = "getBookStore";
         JSONObject actualResponse = null;
-        DefaultListener listener = new DefaultListener(socketIOClient);
+        DefaultEmitterListener listener = new DefaultEmitterListener(socketIOClient);
 
         socketIOClient.bindEvent(getBookStoreEvent, listener);
 
@@ -172,7 +171,7 @@ public class SocketIOClientTest extends SocketIOServerSupport {
 
     @Test(timeout = TIMEOUT)
     public void testEmitJson() throws Exception {
-        DefaultListener listener = new DefaultListener(socketIOClient);
+        DefaultEmitterListener listener = new DefaultEmitterListener(socketIOClient);
 
         JSONObject json = new JSONObject();
         json.put("id", 1);
@@ -194,7 +193,7 @@ public class SocketIOClientTest extends SocketIOServerSupport {
 
     @Test(timeout = TIMEOUT)
     public void testEmitJsonAndProcessAck() throws Exception {
-        DefaultListener listener = new DefaultListener(socketIOClient);
+        DefaultEmitterListener listener = new DefaultEmitterListener(socketIOClient);
         boolean ackCalled = false;
 
         JSONObject json = new JSONObject();
