@@ -22,8 +22,9 @@ import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
-/**
- * Created by kwpark on 18/04/2017.
+/*
+    Important!! If you want to run this test, you will need to install node_modules under /resources/server.
+    So you have to run mvn verify first. Once the package is installed, you can run SocketIO unit test separately in IDE.
  */
 @Slf4j
 public class SocketIOClientTest extends SocketIOServerSupport {
