@@ -2,13 +2,13 @@
     <parent>
         <groupId>kr.co.redbrush.bdd.test</groupId>
         <artifactId>serenity-bdd-test-parent</artifactId>
-        <version>1.0.12-SNAPSHOT</version>
+        <version>1.0.11</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>kr.co.redbrush.bdd.test</groupId>
     <artifactId>serenity-bdd-test-common</artifactId>
-    <version>1.0.12-SNAPSHOT</version>
+    <version>1.0.11</version>
     <packaging>jar</packaging>
 
     <name>serenity-bdd-test-common</name>
