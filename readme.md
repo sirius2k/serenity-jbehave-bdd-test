@@ -154,10 +154,10 @@ serenity-bdd-test-common project provide nodejs server which provides SocketIO p
     }
 ```
 - getBookStore : return bookstore object ([bookstore.json](https://github.com/sirius2k/serenity-jbehave-bdd-test/blob/master/serenity-bdd-test-common/src/test/resources/server/bookstore.json)) with 'getBookStore' event.
-- getBook :  : return bookstore object (([book.json](https://github.com/sirius2k/serenity-jbehave-bdd-test/blob/master/serenity-bdd-test-common/src/test/resources/server/book.json))) with 'getBook' event.
+- getBook :  : return bookstore object ([book.json](https://github.com/sirius2k/serenity-jbehave-bdd-test/blob/master/serenity-bdd-test-common/src/test/resources/server/book.json)) with 'getBook' event.
 
 
-serenity-bdd-test-post-example project also provide nodejs server which provides REST API and WebSocket protocol for test. You can see server source at [app.js](https://github.com/sirius2k/serenity-jbehave-bdd-test-post-example/blob/master/serenity-bdd-test-post-example/src/test/resources/server/app.js). It serves the following REST API and SocketIO events.
+serenity-bdd-test-post-example project also provide nodejs server which provides REST API and WebSocket protocol for test. You can see server source at [app.js](https://github.com/sirius2k/serenity-jbehave-bdd-test/blob/master/serenity-bdd-test-post-example/src/test/resources/server/app.js). It serves the following REST API and SocketIO events.
 - GET / : just return hello text
 - GET /posts : return posts object ([posts.json](https://github.com/sirius2k/serenity-jbehave-bdd-test/blob/master/serenity-bdd-test-post-example/src/test/resources/server/posts.json))
 - GET /posts/:id : return post object ([post.json](https://github.com/sirius2k/serenity-jbehave-bdd-test/blob/master/serenity-bdd-test-post-example/src/test/resources/server/post.json)) with id

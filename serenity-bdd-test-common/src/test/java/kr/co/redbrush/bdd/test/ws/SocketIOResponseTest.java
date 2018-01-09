@@ -1,13 +1,9 @@
 package kr.co.redbrush.bdd.test.ws;
 
-import com.xebialabs.restito.server.StubServer;
-import io.restassured.RestAssured;
-import io.restassured.response.Response;
 import io.socket.client.Socket;
 import kr.co.redbrush.bdd.test.ws.helper.Book;
 import kr.co.redbrush.bdd.test.ws.helper.SocketIOServerSupport;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.hamcrest.Matcher;
 import org.json.JSONObject;
@@ -18,15 +14,9 @@ import org.junit.Test;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.xebialabs.restito.builder.stub.StubHttp.whenHttp;
-import static com.xebialabs.restito.semantics.Action.*;
-import static com.xebialabs.restito.semantics.Condition.get;
-import static io.restassured.RestAssured.expect;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -72,7 +62,7 @@ public class SocketIOResponseTest extends SocketIOServerSupport {
     }
 
     private JSONObject socketIORequest(String event) {
-        DefaultListener listener = new DefaultListener(socketIOClient);
+        DefaultEmitterListener listener = new DefaultEmitterListener(socketIOClient);
 
         socketIOClient.bindEvent(event, listener);
         socketIOClient.emit(event);

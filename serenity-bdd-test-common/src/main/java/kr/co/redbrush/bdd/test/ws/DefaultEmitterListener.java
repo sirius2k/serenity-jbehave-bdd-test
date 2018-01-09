@@ -6,10 +6,10 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Data
-public class DefaultListener implements Emitter.Listener {
+public class DefaultEmitterListener implements Emitter.Listener {
     private SocketIOClient socketIOClient;
 
-    public DefaultListener(SocketIOClient socketIOClient) {
+    public DefaultEmitterListener(SocketIOClient socketIOClient) {
         this.socketIOClient = socketIOClient;
     }
 

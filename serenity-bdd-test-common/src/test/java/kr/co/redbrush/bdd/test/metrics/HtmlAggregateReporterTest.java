@@ -51,7 +51,7 @@ public class HtmlAggregateReporterTest {
 
     @Test
     public void testReport() throws Exception {
-        String expectedResult = "Count : 1, Max : 100\n";
+        String expectedResult = "Count : 1, Max : 100";
 
         Histogram histogram = registry.histogram("test item");
         histogram.update(100L);
