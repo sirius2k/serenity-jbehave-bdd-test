@@ -1,1 +1,4 @@
-#foreach($histogram in $histograms)Count : $histogram.count, Max : $histogram.snapshot.max#end
+#foreach($key in $histograms.keySet())
+#set($histogram=${histograms.get($key)})
+Key : $key, Count : $histogram.count, Max : $histogram.snapshot.max
+#end
