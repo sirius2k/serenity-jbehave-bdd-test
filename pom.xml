@@ -260,7 +260,7 @@
                 <!--
                     command todo release start and finish at once
 
-                    mvn jgitflow:release-start jgitflow:release-finish -Dmaven.test.skip=true -P local,linux
+                    mvn jgitflow:release-start jgitflow:release-finish -Dmaven.test.skip=true  -DreleaseVersion=1.0.0 -DdevelopmentVersion=1.1.0-SNAPSHOT -P local,linux
 
                     command todo release start and finish in steps
 
