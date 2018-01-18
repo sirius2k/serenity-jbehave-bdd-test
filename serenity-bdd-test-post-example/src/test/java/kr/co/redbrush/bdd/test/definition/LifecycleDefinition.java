@@ -16,10 +16,18 @@ import java.util.Map;
 /**
  * Created by kwpark on 02/04/2017.
  */
-@TestExecutionListeners(listeners = {DependencyInjectionTestExecutionListener.class})
-@ContextConfiguration(locations = "/spring/config.xml")
 @Slf4j
-public class BaseTestDefinition {
+public class LifecycleDefinition extends BaseTestDefinition {
     @Autowired
     protected TestContextService testContextService;
+
+    @BeforeScenario
+    public void beforeScenario() {
+    }
+
+    @AfterScenario(uponType = ScenarioType.ANY)
+    public void afterScenario() {
+        testContextService.clearContext();
+        LOGGER.debug("After scenario called. TestContext is cleared.");
+    }
 }
