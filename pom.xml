@@ -59,40 +59,6 @@
         </developer>
     </developers>
 
-    <repositories>
-      <repository>
-        <snapshots>
-            <enabled>false</enabled>
-        </snapshots>
-        <id>central</id>
-        <name>bintray</name>
-        <url>http://jcenter.bintray.com</url>
-      </repository>
-    </repositories>
-
-    <pluginRepositories>
-      <pluginRepository>
-        <snapshots>
-            <enabled>false</enabled>
-        </snapshots>
-        <id>central</id>
-        <name>bintray-plugins</name>
-        <url>http://jcenter.bintray.com</url>
-      </pluginRepository>
-    </pluginRepositories>
-
-    <!-- Uncomment if you want to deploy to specific repository -->
-    <!--distributionManagement>
-        <snapshotRepository>
-            <id>nexus-snapshots</id>
-            <url>http://localhost:8081/repository/maven-snapshots/</url>
-        </snapshotRepository>
-        <repository>
-            <id>nexus-releases</id>
-            <url>http://localhost:8081/repository/maven-releases/</url>
-        </repository>
-    </distributionManagement-->
-
     <dependencyManagement>
         <dependencies>
             <dependency>
