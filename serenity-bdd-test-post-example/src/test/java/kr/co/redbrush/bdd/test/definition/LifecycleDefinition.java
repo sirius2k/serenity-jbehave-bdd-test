@@ -27,7 +27,10 @@ public class LifecycleDefinition extends BaseTestDefinition {
 
     @AfterScenario(uponType = ScenarioType.ANY)
     public void afterScenario() {
-        testContextService.clearContext();
-        LOGGER.debug("After scenario called. TestContext is cleared.");
+        LOGGER.debug("afterScenario : containsKey clearContext {}", Serenity.getCurrentSession().getMetaData().containsKey("clearContext"));
+        if (Serenity.getCurrentSession().getMetaData().containsKey("clearContext")) {
+            testContextService.clearContext();
+            LOGGER.debug("After scenario called. TestContext is cleared.");
+        }
     }
 }
