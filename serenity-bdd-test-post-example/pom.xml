@@ -289,6 +289,22 @@
                 <version>1.6.0</version>
                 <executions>
                     <execution>
+                        <id>npm-install-forever</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>npm</executable>
+                            <workingDirectory>src/test/resources/server</workingDirectory>
+                            <arguments>
+                                <argument>install</argument>
+                                <argument>forever</argument>
+                                <argument>-g</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>npm-install</id>
                         <phase>initialize</phase>
                         <goals>
