@@ -1,6 +1,5 @@
 package kr.co.redbrush.bdd.test.ws;
 
-import io.socket.client.Ack;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 import lombok.Getter;
@@ -9,10 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.StopWatch;
 import org.json.JSONObject;
 
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
