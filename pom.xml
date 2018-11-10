@@ -32,11 +32,11 @@
         <powermock.version>1.7.3</powermock.version>
         <resito.version>0.9.2</resito.version>
         <serenity.bdd.test.common.version>1.0.17-SNAPSHOT</serenity.bdd.test.common.version>
-        <serenity.version>2.0.7</serenity.version>
-        <serenity.jbehave.version>1.42.0</serenity.jbehave.version>
-        <serenity.restassured.version>2.0.7</serenity.restassured.version>
-        <serenity.spring.version>2.0.7</serenity.spring.version>
-        <serenity.maven.plugin.version>2.0.4</serenity.maven.plugin.version>
+        <serenity.version>2.0.15</serenity.version>
+        <serenity.jbehave.version>1.44.0</serenity.jbehave.version>
+        <serenity.restassured.version>2.0.15</serenity.restassured.version>
+        <serenity.spring.version>2.0.15</serenity.spring.version>
+        <serenity.maven.plugin.version>2.0.14</serenity.maven.plugin.version>
         <slf4j.version>1.7.24</slf4j.version>
         <spring.framework.version>5.0.5.RELEASE</spring.framework.version>
         <therore.logback.version>1.0.0</therore.logback.version>
