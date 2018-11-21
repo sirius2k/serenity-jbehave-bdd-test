@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import net.thucydides.core.annotations.Step;
+import net.thucydides.core.annotations.Steps;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -49,13 +50,28 @@ public class PostSteps extends BaseSteps {
         return response;
     }
 
-    @Step
-    public WebServiceResponse getPostFromWebSocket(String userWithIndex, Integer id) throws JSONException {
+    @Step("Send Websocket Message")
+    public void requestPostFromWebSocket(String userWithIndex, Integer id) throws JSONException {
         User user = testContextService.getUser(userWithIndex);
-        WebServiceResponse response = postService.getPostFromWebSocket(user, id);
+
+        postService.requestPostFromWebsocket(user, id);
+    }
+
+    @Step("Get Post From WebSocket")
+    public WebServiceResponse getPostFromWebSocket(String userWithIndex) throws JSONException {
+        User user = testContextService.getUser(userWithIndex);
+        WebServiceResponse response = postService.getPostFromWebSocket(user);
 
         testContextService.setLastResponse(response);
 
         return response;
     }
+
+    @Step("Send Text Message for Test Purpose")
+    public void sendTextMessage(String userWithIndex, String event, String message) throws JSONException {
+        User user = testContextService.getUser(userWithIndex);
+
+        postService.sendTextMessage(user, event, message);
+    }
+
 }
