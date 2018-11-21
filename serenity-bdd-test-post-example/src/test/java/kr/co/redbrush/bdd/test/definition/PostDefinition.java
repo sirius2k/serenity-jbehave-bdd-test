@@ -100,6 +100,8 @@ public class PostDefinition extends BaseTestDefinition {
 
     @When("$userWithIndex request a post with id '$id' from websocket")
     public void whenUserReuqestAPostFromWebsocketWith(String userWithIndex, Integer id) throws JSONException {
-        postSteps.getPostFromWebSocket(userWithIndex, id);
+        postSteps.requestPostFromWebSocket(userWithIndex, id);
+        postSteps.getPostFromWebSocket(userWithIndex);
+        postSteps.sendTextMessage(userWithIndex, "Event", "Message");
     }
 }

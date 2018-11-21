@@ -39,13 +39,21 @@ public class PostService extends BaseService {
         return restAssuredDriver.get(request);
     }
 
-    public WebServiceResponse getPostFromWebSocket(SocketIOClientContainer container, Integer id) throws JSONException {
+    public void requestPostFromWebsocket(SocketIOClientContainer container, Integer id) throws JSONException {
         SocketIOClient client = container.getSocketIOClient();
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("id", id);
 
         socketIODriver.sendMessage(SocketIOEvent.Post.GET_POST, jsonObject, client);
+    }
 
-        return socketIODriver.getJsonMessage(client);
+    public WebServiceResponse getPostFromWebSocket(SocketIOClientContainer container) throws JSONException {
+        return socketIODriver.getJsonMessage(container.getSocketIOClient());
+    }
+
+    public void sendTextMessage(SocketIOClientContainer container, String event, String message) {
+        SocketIOClient client = container.getSocketIOClient();
+
+        socketIODriver.sendMessage(event, message, client);
     }
 }
