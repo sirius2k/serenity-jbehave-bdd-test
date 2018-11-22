@@ -2,7 +2,6 @@ package kr.co.redbrush.bdd.test.steps;
 
 import kr.co.redbrush.bdd.test.domain.User;
 import kr.co.redbrush.bdd.test.service.UserService;
-import kr.co.redbrush.bdd.test.ws.SocketIOClient;
 import kr.co.redbrush.bdd.test.ws.WebServiceResponse;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

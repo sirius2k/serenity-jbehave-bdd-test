@@ -1,10 +1,9 @@
 package kr.co.redbrush.bdd.test.service;
 
-import kr.co.redbrush.bdd.test.common.TestURL;
-import kr.co.redbrush.bdd.test.domain.Post;
-import kr.co.redbrush.bdd.test.domain.User;
-import kr.co.redbrush.bdd.test.domain.request.LoginRequest;
-import kr.co.redbrush.bdd.test.ws.*;
+import kr.co.redbrush.bdd.test.ws.SocketIOClient;
+import kr.co.redbrush.bdd.test.ws.SocketIOClientContainer;
+import kr.co.redbrush.bdd.test.ws.SocketIOClientFactory;
+import kr.co.redbrush.bdd.test.ws.WebServiceResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.hamcrest.Matcher;
 import org.springframework.beans.factory.annotation.Autowired;

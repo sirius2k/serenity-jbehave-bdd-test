@@ -9,9 +9,6 @@ import org.mockito.Mock;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import static com.google.inject.matcher.Matchers.any;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.notNullValue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
