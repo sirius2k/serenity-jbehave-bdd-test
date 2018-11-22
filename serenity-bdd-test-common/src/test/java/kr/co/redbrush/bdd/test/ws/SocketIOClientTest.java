@@ -19,8 +19,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 
 /*
     Important!! If you want to run this test, you will need to install node_modules under /resources/server.

@@ -1,36 +1,18 @@
 package kr.co.redbrush.bdd.test.ws;
 
-import io.restassured.response.Response;
-import io.restassured.response.ValidatableResponse;
-import io.restassured.response.ValidatableResponseLogSpec;
-import io.restassured.specification.RequestLogSpecification;
-import io.restassured.specification.RequestSpecification;
-import kr.co.redbrush.bdd.test.exception.HttpMethodNotSpecifiedException;
 import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.core.Serenity;
 import net.serenitybdd.core.reports.AndContent;
 import net.serenitybdd.core.reports.WithTitle;
-import net.serenitybdd.rest.SerenityRest;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.internal.matchers.InstanceOf;
-import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.client.RestTemplate;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;

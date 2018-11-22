@@ -8,7 +8,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import net.thucydides.core.annotations.Step;
-import net.thucydides.core.annotations.Steps;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

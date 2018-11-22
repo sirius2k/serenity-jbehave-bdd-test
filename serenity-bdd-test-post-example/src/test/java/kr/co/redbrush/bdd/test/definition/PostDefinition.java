@@ -4,9 +4,12 @@ import kr.co.redbrush.bdd.test.domain.Post;
 import kr.co.redbrush.bdd.test.steps.PostSteps;
 import kr.co.redbrush.bdd.test.ws.WebServiceResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.jbehave.core.annotations.*;
+import net.thucydides.core.annotations.Steps;
+import org.jbehave.core.annotations.Alias;
+import org.jbehave.core.annotations.Given;
+import org.jbehave.core.annotations.Then;
+import org.jbehave.core.annotations.When;
 import org.json.JSONException;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 
@@ -20,7 +23,7 @@ import static org.hamcrest.text.IsEmptyString.isEmptyString;
  */
 @Slf4j
 public class PostDefinition extends BaseTestDefinition {
-    @Autowired
+    @Steps
     private PostSteps postSteps;
 
     @PostConstruct

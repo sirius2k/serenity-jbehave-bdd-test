@@ -7,11 +7,6 @@ import org.jbehave.core.annotations.AfterScenario;
 import org.jbehave.core.annotations.BeforeScenario;
 import org.jbehave.core.annotations.ScenarioType;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-
-import java.util.Map;
 
 /**
  * Created by kwpark on 02/04/2017.

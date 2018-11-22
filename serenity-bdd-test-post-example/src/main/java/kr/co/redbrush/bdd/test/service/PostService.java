@@ -8,7 +8,6 @@ import kr.co.redbrush.bdd.test.ws.SocketIOClientContainer;
 import kr.co.redbrush.bdd.test.ws.WebServiceRequest;
 import kr.co.redbrush.bdd.test.ws.WebServiceResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
