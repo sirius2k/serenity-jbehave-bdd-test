@@ -1,5 +1,6 @@
 package kr.co.redbrush.bdd.test.ws;
 
+import kr.co.redbrush.bdd.test.report.serenity.SerenityReport;
 import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.core.Serenity;
 import net.serenitybdd.core.reports.AndContent;
@@ -31,6 +32,9 @@ public class SocketIODriverTest {
     private SocketIOClient socketIOClient;
 
     @Mock
+    private SerenityReport serenityReport;
+
+    @Mock
     private JSONObject json;
 
     @Mock
@@ -40,6 +44,8 @@ public class SocketIODriverTest {
     private AndContent andContent;
 
     private String jsonBody = "{}";
+    private String event = "event";
+    private String message = "message";
 
     private long timeout = 30000L;
 
@@ -69,23 +75,17 @@ public class SocketIODriverTest {
 
     @Test
     public void testSendMessage() {
-        String event = "event";
-        String message = "message";
-
         socketIODriver.sendMessage(event, message, socketIOClient);
 
+        verify(serenityReport).log(SocketIODriver.SOCKETIO_EVENT_TITLE + event, message);
         verify(socketIOClient).emit(event, message);
-        verify(andContent).andContents(any(String.class));
     }
 
     @Test
     public void testSendJsonMessage() {
-        String event = "event";
-        JSONObject json = new JSONObject();
-
         socketIODriver.sendMessage(event, json, socketIOClient);
 
+        verify(serenityReport).log(SocketIODriver.SOCKETIO_EVENT_TITLE + event, json);
         verify(socketIOClient).emit(event, json);
-        verify(andContent).andContents(any(String.class));
     }
 }
