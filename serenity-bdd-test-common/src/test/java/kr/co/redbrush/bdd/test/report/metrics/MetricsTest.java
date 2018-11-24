@@ -1,4 +1,4 @@
-package kr.co.redbrush.bdd.test.metrics;
+package kr.co.redbrush.bdd.test.report.metrics;
 
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.MetricRegistry;
