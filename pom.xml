@@ -16,6 +16,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <tags>feature</tags>
         <assertj.version>3.6.2</assertj.version>
         <clover.version>4.2.1</clover.version>
         <commons.io.version>2.6</commons.io.version>
@@ -83,6 +84,11 @@
                 <groupId>net.serenity-bdd</groupId>
                 <artifactId>serenity-rest-assured</artifactId>
                 <version>${serenity.restassured.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.serenity-bdd</groupId>
+                <artifactId>serenity-emailer</artifactId>
+                <version>${serenity.version}</version>
             </dependency>
 
             <!-- https://mvnrepository.com/artifact/io.socket/socket.io-client -->
@@ -285,6 +291,31 @@
                     <groupId>org.openclover</groupId>
                     <artifactId>clover-maven-plugin</artifactId>
                     <version>${clover.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>net.serenity-bdd.maven.plugins</groupId>
+                    <artifactId>serenity-maven-plugin</artifactId>
+                    <version>${serenity.maven.version}</version>
+                    <configuration>
+                        <tag>${tags}</tag>
+                        <reports>email</reports>
+                    </configuration>
+                    <dependencies>
+                        <dependency>
+                            <groupId>net.serenity-bdd</groupId>
+                            <artifactId>serenity-emailer</artifactId>
+                            <version>${serenity.version}</version>
+                        </dependency>
+                    </dependencies>
+                    <executions>
+                        <execution>
+                            <id>serenity-reports</id>
+                            <phase>post-integration-test</phase>
+                            <goals>
+                                <goal>aggregate</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                 </plugin>
             </plugins>
         </pluginManagement>
